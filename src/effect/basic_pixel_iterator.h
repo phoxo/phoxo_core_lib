@@ -9,7 +9,7 @@ class PixelIterator : public ImageEffect
 {
     void ProcessRegion(Image& img, CRect rc, IProgressListener* progress) override final
     {
-        img.IterateRangePixels(rc, (T&)*this, T::HandlePixel, progress);
+        img.IterateRangePixels(rc, (T&)*this);
     }
 };
 

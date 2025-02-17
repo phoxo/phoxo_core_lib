@@ -26,7 +26,7 @@ public:
     ///@{
     bool IsParallelEnabled() const { return m_parallel; }
     void EnableParallel(bool enable) { m_parallel = enable; }
-    virtual SIZE GetScanLineCountPerTask(const Image& img);
+    virtual SIZE GetScanLineCountPerTask(const Image& img) { return CSize(0, 200); }
     ///@}
 
     /// defaults to check if bpp == 32

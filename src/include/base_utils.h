@@ -10,12 +10,6 @@ _PHOXO_BEGIN
 class Utils
 {
 public:
-    static void InitBitmapInfoHeader(BITMAPINFOHEADER& v, int width, int height, int bpp, bool top_to_bottom = true)
-    {
-        int   hh = (top_to_bottom ? -abs(height) : abs(height));
-        v = { sizeof(v), width, hh, 1, (WORD)bpp };
-    }
-
     static CSize GetBitmapSize(HBITMAP bmp)
     {
         BITMAP   bm = {};

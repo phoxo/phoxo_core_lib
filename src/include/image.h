@@ -7,7 +7,10 @@ _PHOXO_BEGIN
 /**
     @brief Image object.
 
-    (0,0) located at <span style='color:#FF0000'>upper-left</span>, x increase from left to right, y increase from top to down.
+        The image coordinate system follows the convention where:
+    - The origin (0, 0) is located at the <span style='color:#FF0000'>upper-left</span> corner.
+    - The **x-axis** increases from left to right.
+    - The **y-axis** increases from top to bottom.
 */
 class Image
 {
@@ -41,7 +44,7 @@ public:
     }
     /// destructor.
     virtual ~Image() { Destroy(); }
-    /// copy operator.
+    /// copy assignment operator.
     Image& operator= (const Image& img)
     {
         if (&img == this) { assert(false); return *this; }
@@ -65,7 +68,7 @@ public:
     /// @name Create / Destroy.
     ///@{
     /***/
-    /// create image, bpp can be <span style='color:#FF0000'>8 , 24 , 32</span>.
+    /// create a new image, bpp can be <span style='color:#FF0000'>8 , 24 , 32</span>.
     bool Create(int width, int height, int bpp, int attribute = 0)
     {
         Destroy();
@@ -95,19 +98,19 @@ public:
         InitMember();
     }
 
-    /// swap current image with img.
+    /// swap the current image's data with img.
     void SwapImage(Image& img)
     {
         std::swap(img.m_attribute, m_attribute);
         std::swap(img.m_width, m_width);
         std::swap(img.m_height, m_height);
         std::swap(img.m_bpp, m_bpp);
+        std::swap(img.m_stride, m_stride);
         std::swap(img.m_pixel, m_pixel);
         std::swap(img.m_DIB_Handle, m_DIB_Handle);
-        std::swap(img.m_stride, m_stride);
     }
 
-    /// releases ownership of its DIB handle.
+    /// releases ownership of the DIB handle.
     HBITMAP Detach()
     {
         auto   bmp = m_DIB_Handle;
@@ -121,9 +124,9 @@ public:
     /***/
     bool IsValid() const { return (m_pixel != 0); }
     bool IsInside(int x, int y) const { return (x >= 0) && (x < m_width) && (y >= 0) && (y < m_height); }
-    bool IsInside(POINT pt) const { return IsInside(pt.x, pt.y); }
+    bool IsInside(const POINT& pt) const { return IsInside(pt.x, pt.y); }
 
-    /// this function doesn't do boundary check, so <span style='color:#FF0000'>Crash</span> if y exceed.
+    /// this function doesn't perform boundary checks, so <span style='color:#FF0000'>Crash</span> if y exceed.
     BYTE* GetLinePtr(int y) const
     {
         assert(IsInside(0, y));
@@ -139,7 +142,7 @@ public:
             return (py + x);
         return (py + x * 3); // 24bpp
     }
-    BYTE* GetPixel(POINT pt) const { return GetPixel(pt.x, pt.y); }
+    BYTE* GetPixel(const POINT& pt) const { return GetPixel(pt.x, pt.y); }
 
     SIZE GetSize() const { return CSize(m_width, m_height); }
     int Width() const { return m_width; }
@@ -148,7 +151,7 @@ public:
     int GetStride() const { return m_stride; }
     /// equal stride * height
     int GetPixelBufferSize() const { return (m_stride * Height()); }
-    /// get start address of pixel.
+    /// get the starting address of the pixel.
     void* GetMemStart() const { return m_pixel; }
     int GetAttribute() const { return m_attribute; }
     operator HBITMAP() const { return m_DIB_Handle; }
@@ -160,8 +163,8 @@ public:
     /// @name Temporary object.
     ///@{
     /***/
-    /// you can apply some effect (e.g. FCEffectBrightnessContrast) on buffer
-    void Attach32bppBuffer(int width, int height, BYTE* pixel)
+    /// you can apply some effect (e.g. effect::BrightnessContrast) on buffer
+    void Attach32bppBuffer(int width, int height, void* pixel)
     {
         if ((width > 0) && (height != 0) && pixel)
         {
@@ -169,17 +172,17 @@ public:
             m_width = width;
             m_height = abs(height);
             m_bpp = 32;
-            m_pixel = pixel;
+            m_pixel = (BYTE*)pixel;
             m_stride = Math::CalcStride(width, 32);
         }
         else { assert(false); }
     }
     ///@}
 
-    /// @name Process.
+    /// @name Image Processing.
     ///@{
     /***/
-    /// apply an effect, more detail refer to ImageEffect.
+    /// apply an effect to the current image, more detail refer to ImageEffect.
     void ApplyEffect(ImageEffect& effect, IProgressListener* progress = nullptr)
     {
         if (!effect.IsSupported(*this)) { assert(false); return; }
@@ -189,8 +192,7 @@ public:
         if (progress)
             progress->UpdateProgress(0);
 
-        auto   type = effect.QueryProcessMode();
-        if (type == ImageEffect::ProcessMode::EntireMyself)
+        if (effect.QueryProcessMode() == ImageEffect::ProcessMode::EntireMyself)
         {
             effect.ProcessEntire(*this, progress);
         }
@@ -211,31 +213,18 @@ public:
             progress->UpdateProgress(100);
     }
 
-    // 四个参数就不会inline，去掉最后一个参数就会内联，因此加上 __forceinline
-    template<class FUNC, class EFFT>
-    __forceinline void IterateRangePixels(CRect rc, EFFT& effect, FUNC handle_pixel, IProgressListener* progress = nullptr)
+    template<class T>
+    void IterateRangePixels(CRect rc, T& effect)
     {
-        if (!handle_pixel) { assert(false); return; }
-
         int   bpp = ColorBits() / 8;
         for (int y = rc.top; y < rc.bottom; y++)
         {
             PBYTE   cur = GetPixel(rc.left, y);
             for (int x = rc.left; x < rc.right; x++, cur += bpp)
             {
-                handle_pixel(*this, x, y, (RGBA32bit*)cur, effect);
+                T::HandlePixel(*this, x, y, (RGBA32bit*)cur, effect);
             }
-
-            // 没必要每行都更新进度，50行一次更新，给用户中断处理的机会
-            if (progress && (y % 50 == 0) && !progress->UpdateProgress((y - rc.top) * 100 / rc.Height()))
-                break;
         }
-    }
-
-    template<class T>
-    void IterateRangePixels2(CRect rc, T& effect, IProgressListener* progress = nullptr)
-    {
-        IterateRangePixels(rc, effect, T::HandlePixel, progress);
     }
     ///@}
 
@@ -256,10 +245,10 @@ private:
             info_byte += (sizeof(RGBQUAD) * 256);
         }
 
-        std::vector<BYTE>   buf(info_byte, (BYTE)0);
+        std::vector<BYTE>   buf(info_byte);
         auto   info = (BITMAPINFO*)buf.data();
 
-        Utils::InitBitmapInfoHeader(info->bmiHeader, m_width, m_height, m_bpp, true);
+        info->bmiHeader = { sizeof(BITMAPINFOHEADER), m_width, -m_height, 1, (WORD)m_bpp }; // the height is negative, from top to bottom
         m_DIB_Handle = CreateDIBSection(NULL, info, DIB_RGB_COLORS, (VOID**)&m_pixel, NULL, 0);
     }
 

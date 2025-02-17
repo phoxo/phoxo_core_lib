@@ -25,13 +25,15 @@ private:
     {
         auto   mem = GlobalAlloc(GMEM_MOVEABLE, img.GetPixelBufferSize() + sizeof(BITMAPINFOHEADER));
         auto   ptr = (BITMAPINFOHEADER*)GlobalLock(mem);
-        Utils::InitBitmapInfoHeader(*ptr, img.Width(), img.Height(), img.ColorBits(), false);
+        *ptr = { sizeof(*ptr), img.Width(), img.Height(), 1, (WORD)img.ColorBits() };
 
+        Image   tmp;
+        tmp.Attach32bppBuffer(img.Width(), img.Height(), ptr + 1);
+
+        CopyMemory(tmp.GetMemStart(), img.GetMemStart(), img.GetPixelBufferSize());
         Flip   eff;
         eff.EnableParallel(true);
-        img.ApplyEffect(eff);
-        CopyMemory(ptr + 1, img.GetMemStart(), img.GetPixelBufferSize());
-        img.ApplyEffect(eff);
+        tmp.ApplyEffect(eff);
 
         GlobalUnlock(mem);
         return mem;
