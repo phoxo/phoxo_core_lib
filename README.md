@@ -1,20 +1,22 @@
 
 PhoXo Core Lib
 ===========
-PhoXo Core Lib is a lightweight, header-only C++ image manipulation library. Initially, it was cross-platform, however, due to lack of time for maintenance and to maximize performance on Windows (such as thread pool, Bitmap handle, and convenient interaction with DC and D2D), I gave up support for cross-platform. Now, it is a Windows-only image library. However, the essence of image processing is merely a technique for manipulating two-dimensional arrays, The majority of the code is generic C++ code. I hope you can find useful information here.
+**PhoXo Core Lib** is a lightweight, header-only C++ library designed for image manipulation. Originally developed as a cross-platform solution, the library has since shifted focus to Windows due to limited time for maintenance and the desire to optimize performance on this platform. Key enhancements for Windows include features such as thread pooling, Bitmap handles, and seamless integration with Device Contexts (DC) and Direct2D (D2D).
+
+Despite this shift, the core of the library remains focused on image processing, which fundamentally involves manipulating two-dimensional arrays. The majority of the code is written in generic C++, ensuring flexibility and efficiency. I hope you find the information here useful.
 
 You can also find the original version online : [PhoXo Core Lib legacy](https://www.codeproject.com/Articles/13559/ImageStone)
 
 ## Prepare to Use
-- #include "UIStone/Source/base/image_stone/ImageStone.h"
-- at the entry point of your program call : **CImageStoneInitializer::Init()**
-- at the exit point of your program call : **CImageStoneInitializer::Uninit()**
+- #include "phoxo_core_lib/src/phoxo_core.h"
+- at the entry point of your program call : **phoxo::CoreLib::Init()**
+- at the exit point of your program call : **phoxo::CoreLib::Uninit()**
 
 A typical initialization code looks like this:
 ```c++
 BOOL CPhoXoSeeApp::InitInstance()
 {
-    CImageStoneInitializer::Init();
+    phoxo::CoreLib::Init();
 
     InitMFCStandardCode();
     __super::InitInstance();
@@ -24,7 +26,7 @@ BOOL CPhoXoSeeApp::InitInstance()
 
 int CPhoXoSeeApp::ExitInstance()
 {
-    CImageStoneInitializer::Uninit();
+    phoxo::CoreLib::Uninit();
     return __super::ExitInstance();
 }
 ```
@@ -32,30 +34,30 @@ int CPhoXoSeeApp::ExitInstance()
 ## Load / Save image file 
 > **Load image from File**
 ```c++
-FCImage   img;
+Image   img;
 // read an image using Gdiplus
-FCCodecGdiplus::Load(Gdiplus::Bitmap(L"d:\\a.jpg"), img);
+CodecGdiplus::Load(Gdiplus::Bitmap(L"d:\\a.jpg"), img);
 
 // read an image using WIC and require premultiplied alpha format
-FCCodecWIC::LoadFile(L"d:\\a.jpg", img, WICPremultiplied32bpp);
+CodecWIC::LoadFile(L"d:\\a.jpg", img, WICPremultiplied32bpp);
 ```
 
 > **Load image from Memory**
 ```c++
-auto   stream = FCBaseHelper::CreateMemStream(buf, buf_size);
+auto   stream = Utils::CreateMemStream(buf, buf_size);
 
-FCImage   img;
+Image   img;
 // read an image using Gdiplus
-FCCodecGdiplus::Load(Gdiplus::Bitmap(stream), img);
+CodecGdiplus::Load(Gdiplus::Bitmap(stream), img);
 
 // read an image using WIC and require # straight alpha format
-FCCodecWIC::LoadStream(stream, img, WICNormal32bpp);
+CodecWIC::LoadStream(stream, img, WICNormal32bpp);
 ```
 
 > **Save image to File**
 ```c++
 // read image to file using Gdiplus
-FCCodecGdiplus::SaveFile(L"d:\\a.jpg", img, 80);
+CodecGdiplus::SaveFile(L"d:\\a.jpg", img, 80);
 
 // read image to file using WIC
 auto   bmp = CWICFunc::CreateBitmapFromHBITMAP(img, WICBitmapUseAlpha);
@@ -69,13 +71,13 @@ Although Microsoft no longer updates GDI+, and WIC is indeed powerful enough, bu
 ## Draw on the bitmap
 ```c++
 // add this line -> using namespace Gdiplus;
-FCImage   img;
+Image   img;
 img.Create(500, 300, 32);
-img.ApplyEffect(FCEffectFillColor(Color::PapayaWhip));
+img.ApplyEffect(effect::FillColor(Color::PapayaWhip));
 
 // Here a GDI+ bitmap object is created.
 // and it doesn't allocate memory but directly uses the memory we provide
-auto   gpbmp = FCCodecGdiplus::CreateBitmapReference(img);
+auto   gpbmp = CodecGdiplus::CreateBitmapReference(img);
 Graphics   gc(gpbmp.get());
 gc.SetSmoothingMode(SmoothingModeAntiAlias);
 
@@ -95,7 +97,7 @@ pen.SetStartCap(LineCapRound);
 pen.SetCustomEndCap(&user_cap);
 gc.DrawLine(&pen, 50, 100, 200, 230);
 
-FCCodecGdiplus::SaveFile(L"d:\\out.png", img);
+CodecGdiplus::SaveFile(L"d:\\out.png", img);
 ```
 This is the program's output:
 
@@ -110,14 +112,14 @@ Using GDI and GDI+, you can easily render our bitmaps to the screen. Please note
 // draw image using GDI
 if ((img.ColorBits() == 32) && !img.IsPremultiplied())
 {
-    img.ApplyEffect(FCEffectPremultiply());
+    img.ApplyEffect(effect::Premultiply());
 }
 
 // using GDI+
 Graphics   gc(hdc);
-auto   gdip_img = FCCodecGdiplus::CreateBitmapReference(img);
+auto   gdip_bmp = CodecGdiplus::CreateBitmapReference(img);
 gc.SetInterpolationMode(InterpolationModeHighQualityBicubic);
-gc.DrawImage(gdip_img.get(), 0, 0, 200, 200);
+gc.DrawImage(gdip_bmp.get(), 0, 0, 200, 200);
 ```
 
 ## Image processing
@@ -125,15 +127,15 @@ gc.DrawImage(gdip_img.get(), 0, 0, 200, 200);
 One of the most important feature of ImageStone is the ability to handle images with ease. In addition to a wide range of built-in effects, you can also easily add new effects.
 ```c++
 // This is a piece of code for applying Gaussian blur to an image
-FCImage   img;
-FCCodecWIC::LoadFile(L"d:\\1.jpg", img);
+Image   img;
+CodecWIC::LoadFile(L"d:\\1.jpg", img);
 
-FCEffectGaussianBlur   cmd(20, true);
-cmd.EnableParallelAccelerate(true);
+effect::StackBlur   cmd(20);
+cmd.EnableParallel(true);
 img.ApplyEffect(cmd);
 
-FCCodecGdiplus::SaveFile(L"d:\\out.jpg", img);
+CodecGdiplus::SaveFile(L"d:\\out.jpg", img);
 ```
-Please note the **EnableParallelAccelerate** switch. Enabling it allows the use of multithreading to maximize the utilization of modern multi-core CPUs. The processing time for a 5365x4194 image with the above code decreases from 950 milliseconds to 170 milliseconds, Most image processing algorithms experience a 5-10 times speed improvement.
+Please note the **EnableParallel** switch. Enabling it allows the use of multithreading to maximize the utilization of modern multi-core CPUs. The processing time for a 5365x4194 image with the above code decreases from 950 milliseconds to 170 milliseconds, Most image processing algorithms experience a 5-10 times speed improvement.
 
 
