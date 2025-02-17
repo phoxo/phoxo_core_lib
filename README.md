@@ -8,9 +8,10 @@ Despite this shift, the core of the library remains focused on image processing,
 You can also find the original version online : [PhoXo Core Lib legacy](https://www.codeproject.com/Articles/13559/ImageStone)
 
 ## Prepare to Use
-- #include "phoxo_core_lib/src/phoxo_core.h"
-- at the entry point of your program call : **phoxo::CoreLib::Init()**
-- at the exit point of your program call : **phoxo::CoreLib::Uninit()**
+> **For MFC applications**
+- Include the header: `#include "phoxo_core.h"`
+- call **`phoxo::CoreLib::Init()`** at the program's entry point
+- call **`phoxo::CoreLib::Uninit()`** at the program's exit point
 
 A typical initialization code looks like this:
 ```c++
@@ -30,15 +31,24 @@ int CPhoXoSeeApp::ExitInstance()
     return __super::ExitInstance();
 }
 ```
+> **For pure SDK applications**
+- Include `<atlstr.h>` and `<atltypes.h>` **before** including `phoxo_core.h`
+```c++
+#include <atlstr.h>
+#include <atltypes.h>
+#include "phoxo_core_lib/src/phoxo_core.h"
+using namespace phoxo;
+```
 
 ## Load / Save image file 
 > **Load image from File**
 ```c++
 Image   img;
-// read an image using Gdiplus
-CodecGdiplus::Load(Gdiplus::Bitmap(L"d:\\a.jpg"), img);
+// load an image using GDI+
+Gdiplus::Bitmap   src(L"d:\\a.jpg");
+CodecGdiplus::Load(src, img);
 
-// read an image using WIC and require premultiplied alpha format
+// load an image using WIC with premultiplied alpha format
 CodecWIC::LoadFile(L"d:\\a.jpg", img, WICPremultiplied32bpp);
 ```
 
@@ -47,10 +57,11 @@ CodecWIC::LoadFile(L"d:\\a.jpg", img, WICPremultiplied32bpp);
 auto   stream = Utils::CreateMemStream(buf, buf_size);
 
 Image   img;
-// read an image using Gdiplus
-CodecGdiplus::Load(Gdiplus::Bitmap(stream), img);
+// load an image using GDI+
+Gdiplus::Bitmap   src(stream);
+CodecGdiplus::Load(src, img);
 
-// read an image using WIC and require # straight alpha format
+// load an image using WIC with premultiplied alpha format
 CodecWIC::LoadStream(stream, img, WICNormal32bpp);
 ```
 

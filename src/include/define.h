@@ -4,8 +4,6 @@
 #include <windows.h>
 #include <comdef.h> // for SDK app, must include this before include GDI+
 
-#include <atltypes.h>
-
 #include <cmath>
 #include <cassert>
 #include <memory>
