@@ -55,26 +55,11 @@ public:
         return p->Release();
     }
 
-    static bool IsValidDate(int year, int month, int day)
-    {
-        return (year > 1970) && (year < 2900) && (month >= 1) && (month <= 12) && (day >= 1) && (day <= 31);
-    }
-
     static IStreamPtr CreateMemStream(const void* ptr, UINT mem_size)
     {
         IStreamPtr   v;
         if (ptr) { v.Attach(SHCreateMemStream((const BYTE*)ptr, mem_size)); }
         return v;
-    }
-
-    template<class T>
-    static T& LazyCreateSingleton(std::unique_ptr<T>& obj)
-    {
-        if (!obj)
-        {
-            obj = std::make_unique<T>();
-        }
-        return *obj;
     }
 };
 

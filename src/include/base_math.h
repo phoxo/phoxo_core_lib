@@ -22,6 +22,12 @@ public:
         return 4 * ((width * bpp + 31) / 32);
     }
 
+    template<class T>
+    static bool AlmostEqual(const T& a, const T& b)
+    {
+        return std::fabs(a - b) < std::numeric_limits<T>::epsilon();
+    }
+
     static int Rand()
     {
         static long   s_rand_hold = (long)::GetTickCount();

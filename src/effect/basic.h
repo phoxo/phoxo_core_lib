@@ -2,6 +2,7 @@
 #include "basic_pixel_iterator.h"
 #include "basic_LUT.h"
 #include "basic_orientation.h"
+#include "hue_saturation.h"
 
 _PHOXO_BEGIN
 _PHOXO_EFFECT_BEGIN
