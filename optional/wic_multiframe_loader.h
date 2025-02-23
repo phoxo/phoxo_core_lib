@@ -46,8 +46,8 @@ public:
 
     int GetDuration() const
     {
-        CFindDurationTag   finder;
-        int   time = finder.FindDuration(m_frame, IsGif());
+        CFindDurationTag   finder(IsGif());
+        int   time = finder.FindDuration(m_frame);
         if (IsGif())
         {
             time = time * 10;
@@ -62,19 +62,22 @@ private:
     class CFindDurationTag : private CWICMetadataEnumerator
     {
     private:
-        CComPROPVARIANT   m_meta_key;
+        const CComPROPVARIANT   m_meta_key;
         int   m_result = 0;
 
     public:
-        int FindDuration(IWICBitmapFrameDecode* frame_decode, bool is_gif)
+        CFindDurationTag(bool is_gif) : m_meta_key(is_gif ? L"Delay" : L"FrameDuration")
         {
-            m_meta_key.Set(is_gif ? L"Delay" : L"FrameDuration");
+        }
+
+        int FindDuration(IWICBitmapFrameDecode* frame_decode)
+        {
             EnumAllMetadata(frame_decode);
             return m_result;
         }
 
     private:
-        virtual void OnBeforeEnumReader(IWICMetadataReader* reader, REFCLSID meta_format)
+        void OnBeforeEnumReader(IWICMetadataReader* reader, REFCLSID meta_format) override
         {
             CComPROPVARIANT   val;
             reader->GetValue(NULL, &m_meta_key, &val);

@@ -1,9 +1,10 @@
 
+
 PhoXo Core Lib
 ===========
-**PhoXo Core Lib** is a lightweight, header-only C++ library designed for image manipulation. Originally developed as a cross-platform solution, the library has since shifted focus to Windows due to limited time for maintenance and the desire to optimize performance on this platform. Key enhancements for Windows include features such as thread pooling, Bitmap handles, and seamless integration with Device Contexts (DC) and Direct2D (D2D).
+**PhoXo Core Lib** is a lightweight, header-only C++ library designed for image manipulation. Initially developed as a cross-platform solution, the focus has now shifted to Windows. This change is driven by limited maintenance time and the goal to optimize performance on the Windows platform. Enhancements specific to Windows include features such as thread pooling, Bitmap handles, and seamless integration with Device Contexts (DC) and Direct2D (D2D).
 
-Despite this shift, the core of the library remains focused on image processing, which fundamentally involves manipulating two-dimensional arrays. The majority of the code is written in generic C++, ensuring flexibility and efficiency. I hope you find the information here useful.
+Despite the shift to Windows, the library remains fundamentally focused on image processing, specifically manipulating two-dimensional arrays. The majority of the code is written in generic C++, ensuring both flexibility and efficiency. I hope this information proves useful.
 
 You can also find the original version online : [PhoXo Core Lib legacy](https://www.codeproject.com/Articles/13559/ImageStone)
 
@@ -19,7 +20,6 @@ BOOL CPhoXoSeeApp::InitInstance()
 {
     phoxo::CoreLib::Init();
 
-    InitMFCStandardCode();
     __super::InitInstance();
 
     return FALSE;
@@ -39,7 +39,11 @@ int CPhoXoSeeApp::ExitInstance()
 #include "phoxo_core_lib/src/phoxo_core.h"
 using namespace phoxo;
 ```
+> **Why don't I use std::wstring instead of CString?**
 
+ - Pros: `wstring` is faster than `CString` for concatenation and heavy string processing, and our library doesn¡¯t handle many strings.
+- Cons: a `wstring` uses 40 bytes, while a `CString` uses 8 bytes.
+- Cons: passing `nullptr` to `wstring` causes a crash and requires protection. `wstring` does not implicitly convert to `WCHAR*`, resulting in redundant code.
 ## Load / Save image file 
 > **Load image from File**
 ```c++
@@ -61,16 +65,16 @@ Image   img;
 Gdiplus::Bitmap   src(stream);
 CodecGdiplus::Load(src, img);
 
-// load an image using WIC with premultiplied alpha format
+// load an image using WIC
 CodecWIC::LoadStream(stream, img, WICNormal32bpp);
 ```
 
 > **Save image to File**
 ```c++
-// read image to file using Gdiplus
+// write image to file using Gdiplus
 CodecGdiplus::SaveFile(L"d:\\a.jpg", img, 80);
 
-// read image to file using WIC
+// write image to file using WIC
 auto   bmp = CWICFunc::CreateBitmapFromHBITMAP(img, WICBitmapUseAlpha);
 CWICFileEncoder   writer(L"d:\\a.jpg", 80);
 writer.WriteFile(bmp);
@@ -135,7 +139,7 @@ gc.DrawImage(gdip_bmp.get(), 0, 0, 200, 200);
 
 ## Image processing
 
-One of the most important feature of ImageStone is the ability to handle images with ease. In addition to a wide range of built-in effects, you can also easily add new effects.
+One of the most important feature of PhoXo Core Lib is the ability to handle images with ease. In addition to a wide range of built-in effects, you can also easily add new effects.
 ```c++
 // This is a piece of code for applying Gaussian blur to an image
 Image   img;

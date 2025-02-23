@@ -54,7 +54,7 @@ public:
     }
 
 private:
-    virtual void OnBeforeEnumReader(IWICMetadataReader* reader, REFCLSID meta_format)
+    void OnBeforeEnumReader(IWICMetadataReader* reader, REFCLSID meta_format) override
     {
         if (meta_format == GUID_MetadataFormatGps)
         {
@@ -62,7 +62,7 @@ private:
         }
     }
 
-    virtual void OnEnumMetadataItem(REFCLSID meta_format, const CComPROPVARIANT& item_id, const CComPROPVARIANT& val)
+    void OnEnumMetadataItem(REFCLSID meta_format, const CComPROPVARIANT& item_id, const CComPROPVARIANT& val) override
     {
         if (item_id.vt != VT_UI2)
             return;

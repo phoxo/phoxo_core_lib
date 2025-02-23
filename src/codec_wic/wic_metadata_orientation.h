@@ -12,7 +12,7 @@ public:
             if (reader)
             {
                 CComPROPVARIANT   prop;
-                if (reader->GetMetadataByName(OrientationKeyJpeg(), &prop) == S_OK)
+                if (reader->GetMetadataByName(OrientationKeyJpeg, &prop) == S_OK)
                 {
                     if (prop.vt == VT_UI2)
                     {
@@ -30,7 +30,7 @@ public:
 
         // 不要用RemoveMetadataByName删除tag，否则只旋转tag时fast encode会失败
         CComPROPVARIANT   prop((USHORT)orientation);
-        if (writer && (writer->SetMetadataByName(OrientationKeyJpeg(), &prop) == S_OK))
+        if (writer && (writer->SetMetadataByName(OrientationKeyJpeg, &prop) == S_OK))
             return true;
 
         assert(false);
@@ -54,5 +54,5 @@ public:
     }
 
 private:
-    static CString OrientationKeyJpeg() { return L"/app1/ifd/{ushort=274}"; } // In a TIFF file, use /ifd/{ushort=274}
+    static constexpr PCWSTR   OrientationKeyJpeg = L"/app1/ifd/{ushort=274}"; // In a TIFF file, use /ifd/{ushort=274}
 };

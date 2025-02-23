@@ -53,7 +53,6 @@ public:
         Gdiplus::GdiplusStartup(&m_token, &si, NULL); // init GDIPLUS
 
         CWICFunc::CreateWICFactory(); // init WIC
-        CWICInstalledCodec::Init();
     }
 
     static void Uninit()

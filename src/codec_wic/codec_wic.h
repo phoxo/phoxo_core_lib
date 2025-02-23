@@ -8,9 +8,9 @@ _PHOXO_BEGIN
 class CodecWIC
 {
 public:
-    static bool LoadFile(PCWSTR image_path, Image& img, REFWICPixelFormatGUID output_format = WICNormal32bpp, CWICMetadata* meta = NULL, bool use_embedded_icc = false)
+    static bool LoadFile(PCWSTR filepath, Image& img, REFWICPixelFormatGUID output_format = WICNormal32bpp, CWICMetadata* meta = NULL, bool use_embedded_icc = false)
     {
-        auto   stm = CWICFunc::CreateStreamFromFileNoLock(image_path);
+        auto   stm = CWICFunc::CreateStreamFromFileNoLock(filepath);
         return LoadStream(stm, img, output_format, meta, use_embedded_icc);
     }
 
@@ -36,15 +36,14 @@ public:
 
         if (use_embedded_icc)
         {
-            auto   icc = CWICFunc::GetFirstColorContext(frame_decode);
-            if (icc)
+            if (auto icc = CWICFunc::GetFirstColorContext(frame_decode))
             {
                 dest = ApplyEmbeddedICC(dest, icc);
             }
         }
 
-        auto   rotate = CWICMetadataOrientation::Read(frame_decode);
-        if (rotate != WICBitmapTransformRotate0)
+        static_assert(WICBitmapTransformRotate0 == 0);
+        if (auto rotate = CWICMetadataOrientation::Read(frame_decode))
         {
             dest = CorrectOrientation(dest, rotate);
         }
@@ -55,9 +54,8 @@ public:
     static bool Load(IWICBitmapSource* src_bmp, Image& img, WICPixelFormatGUID output_format)
     {
         int   bpp = CWICFunc::GetBitsPerPixel(output_format);
-        int   attr = ((output_format == WICPremultiplied32bpp) ? Image::PremultipliedAlpha : 0);
-        auto   src = CWICFunc::ConvertFormat(src_bmp, output_format);
-        if (src)
+        int   attr = (output_format == WICPremultiplied32bpp) ? Image::PremultipliedAlpha : 0;
+        if (auto src = CWICFunc::ConvertFormat(src_bmp, output_format))
         {
             CSize   sz = CWICFunc::GetBitmapSize(src);
             if (img.Create(sz.cx, sz.cy, bpp, attr))
@@ -82,8 +80,7 @@ public:
 
         // 不要改变icc像素格式，有一次解码.cr2格式遇到超长时间
         auto   format = CWICFunc::GetPixelFormat(src_bmp);
-        auto   trans = CWICFunc::CreateColorTransformer();
-        if (trans)
+        if (auto trans = CWICFunc::CreateColorTransformer())
         {
             if (trans->Initialize(src_bmp, src_icc, dest_icc, format) == S_OK)
                 return trans;
@@ -95,8 +92,7 @@ public:
 private:
     static IWICBitmapSourcePtr CorrectOrientation(IWICBitmapSourcePtr src, WICBitmapTransformOptions flag)
     {
-        auto   cmd = CWICFunc::CreateBitmapFlipRotator();
-        if (cmd)
+        if (auto cmd = CWICFunc::CreateBitmapFlipRotator())
         {
             if (cmd->Initialize(src, flag) == S_OK)
                 return cmd;

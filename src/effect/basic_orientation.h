@@ -7,7 +7,7 @@ _PHOXO_EFFECT_BEGIN
 class Mirror : public PixelIterator<Mirror>
 {
 public:
-    static void HandlePixel(Image& img, int x, int y, RGBA32bit* px, Mirror& effect)
+    static void HandlePixel(Image& img, int x, int y, RGBA32bit* px, ImageEffect&)
     {
         if (x < img.Width() / 2)
         {
@@ -21,7 +21,7 @@ public:
 class Flip : public PixelIterator<Flip>
 {
 public:
-    static void HandlePixel(Image& img, int x, int y, RGBA32bit* px, Flip& effect)
+    static void HandlePixel(Image& img, int x, int y, RGBA32bit* px, ImageEffect&)
     {
         if (y < img.Height() / 2)
         {
@@ -60,9 +60,9 @@ private:
         RInit(img);
     }
 public:
-    static void HandlePixel(Image& img, int x, int y, RGBA32bit* px, Rotate90& effect)
+    static void HandlePixel(Image& img, int x, int y, RGBA32bit* px, Rotate90& eff)
     {
-        *px = effect.RMap(y, img.Width() - 1 - x);
+        *px = eff.RMap(y, img.Width() - 1 - x);
     }
 };
 
@@ -76,9 +76,9 @@ private:
         RInit(img);
     }
 public:
-    static void HandlePixel(Image& img, int x, int y, RGBA32bit* px, Rotate270& effect)
+    static void HandlePixel(Image& img, int x, int y, RGBA32bit* px, Rotate270& eff)
     {
-        *px = effect.RMap(img.Height() - 1 - y, x);
+        *px = eff.RMap(img.Height() - 1 - y, x);
     }
 };
 

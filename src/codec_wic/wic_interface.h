@@ -39,14 +39,9 @@ public:
     ~CComPROPVARIANT() { Clear(); }
 
     CComPROPVARIANT(USHORT v) { InitPropVariantFromUInt16(v, this); }
-    CComPROPVARIANT(PCWSTR v) { Set(v); }
+    CComPROPVARIANT(PCWSTR v) { InitPropVariantFromString(v, this); }
 
     operator LPPROPVARIANT() { return this; }
-
-    void Set(PCWSTR v)
-    {
-        InitPropVariantFromString(v, this);
-    }
 
     void Clear()
     {
@@ -98,7 +93,7 @@ public:
             {
                 ULONGLONG   buf[3] = { cauh.pElems[0].QuadPart, cauh.pElems[1].QuadPart, cauh.pElems[2].QuadPart };
                 auto   ptr = (ULONG*)buf;
-                if (!ptr[1] || !ptr[3] || !ptr[5]) { assert(FALSE); return 0; }
+                if (!ptr[1] || !ptr[3] || !ptr[5]) { assert(false); return 0; }
 
                 float   d = ptr[0] / (float)ptr[1];
                 float   m = ptr[2] / (float)ptr[3];

@@ -18,60 +18,51 @@ private:
             {
                 r.GetFileExtensions(read, m_format_ext.GetBuffer(read), &read);
                 m_format_ext.ReleaseBuffer();
+                m_format_ext.MakeLower();
                 m_format_ext = L"," + m_format_ext + L",";
             }
         }
     };
 
-private:
-    static inline std::vector<CodecInfo>   g_decoders_info;
+    struct AllDecoderList : public std::vector<CodecInfo>
+    {
+        AllDecoderList()
+        {
+            IEnumUnknownPtr   root;
+            CWICFunc::g_factory->CreateComponentEnumerator(WICDecoder, WICComponentEnumerateDefault, &root);
+            if (!root)
+                return;
+
+            IUnknownPtr   unk;
+            while (root->Next(1, &unk, NULL) == S_OK)
+            {
+                if (IWICBitmapCodecInfoPtr ifp = unk)
+                {
+                    emplace_back(*ifp);
+                }
+                unk = nullptr;
+            }
+
+            shrink_to_fit();
+        }
+    };
 
 public:
-    static void Init()
+    static CLSID FindContainerFormat(PCWSTR filepath)
     {
-        FindContainerFormat(L"");
-    }
+        static const AllDecoderList   s_decoders;
 
-    static CLSID FindContainerFormat(PCWSTR file_path)
-    {
-        if (!g_decoders_info.size())
-        {
-            FindAllDecoder();
-        }
-
-        CString   ext = PathFindExtension(file_path);
+        CString   ext = PathFindExtension(filepath);
         if (!ext.IsEmpty())
         {
+            ext.MakeLower();
             ext = L"," + ext + L",";
-            for (auto& iter : g_decoders_info)
+            for (auto& iter : s_decoders)
             {
-                if (StrStrI(iter.m_format_ext, ext))
+                if (wcsstr(iter.m_format_ext, ext))
                     return iter.m_container_format;
             }
         }
         return CLSID_NULL;
-    }
-
-private:
-    static void FindAllDecoder()
-    {
-        IEnumUnknownPtr   root;
-        CWICFunc::g_factory->CreateComponentEnumerator(WICDecoder, WICComponentEnumerateDefault, &root);
-        if (!root)
-            return;
-
-        IUnknownPtr   unkp;
-        while (root->Next(1, &unkp, NULL) == S_OK)
-        {
-            IWICBitmapCodecInfoPtr   ifp = unkp;
-            if (ifp)
-            {
-                CodecInfo   info(*ifp);
-                g_decoders_info.push_back(info);
-            }
-            unkp = NULL;
-        }
-
-        g_decoders_info.shrink_to_fit();
     }
 };

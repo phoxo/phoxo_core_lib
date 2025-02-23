@@ -8,8 +8,6 @@
 namespace eff = phoxo::effect;
 using phoxo::CodecWIC;
 using phoxo::CodecGdiplus;
-using phoxo::RGBA32bit;
-using xColor = phoxo::Color;
 using FImage = phoxo::Image;
 
 using namespace Gdiplus;

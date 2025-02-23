@@ -28,6 +28,6 @@ public:
 
     bool IsFormat32bpp() const
     {
-        return (m_data && (m_width * 4 == m_stride));
+        return m_data && (m_width * 4 == m_stride);
     }
 };

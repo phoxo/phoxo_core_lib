@@ -54,13 +54,12 @@ public:
         }
     }*/
 
-    bool SetICC(IWICColorContext* icc)
+    void SetICC(IWICColorContext* icc)
     {
         if (m_frame_encode && icc && IsICCSaveSupported(icc))
         {
-            return (m_frame_encode->SetColorContexts(1, &icc) == S_OK);
+            m_frame_encode->SetColorContexts(1, &icc);
         }
-        return false;
     }
 
     bool WriteFile(IWICBitmapSourcePtr src)
@@ -95,15 +94,14 @@ private:
         return false;
     }
 
-    bool SetOrientationTag(int orientation)
+    void SetOrientationTag(int orientation)
     {
         if (m_frame_encode)
         {
             IWICMetadataQueryWriterPtr   writer;
             m_frame_encode->GetMetadataQueryWriter(&writer);
-            return CWICMetadataOrientation::Write(writer, orientation);
+            CWICMetadataOrientation::Write(writer, orientation);
         }
-        return false;
     }
 
     void CreateFrameEncode(int jpeg_quality)
@@ -131,8 +129,7 @@ private:
     {
         _variant_t   val(quality);
         _bstr_t   prop_name = L"ImageQuality";
-        PROPBAG2   str = {};
-        str.pstrName = prop_name;
+        PROPBAG2   str = { .pstrName = prop_name };
         if (prop) { prop->Write(1, &str, &val); }
     }
 };

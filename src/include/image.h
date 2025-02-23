@@ -213,8 +213,14 @@ public:
             progress->UpdateProgress(100);
     }
 
+    void ApplyEffectAndDelete(ImageEffect* effect, IProgressListener* progress = nullptr)
+    {
+        ApplyEffect(*effect, progress);
+        delete effect;
+    }
+
     template<class T>
-    void IterateRangePixels(CRect rc, T& effect)
+    void IterateRangePixels(const RECT& rc, T& effect)
     {
         int   bpp = ColorBits() / 8;
         for (int y = rc.top; y < rc.bottom; y++)

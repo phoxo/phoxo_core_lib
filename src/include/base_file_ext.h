@@ -31,35 +31,39 @@ public:
     /// get image's format by file's ext name.
     static ImageFormat GetType(PCWSTR filepath)
     {
-        CString   ext = PathFindExtension(filepath);
-        if (ext.GetLength())
-            ext.Delete(0, 1);
-        ext = L"," + ext + L",";
-
         using enum ImageFormat;
-        if (StrStrI(ImageExtJpeg(), ext))  return Jpeg;
-        if (StrStrI(L",png,", ext))  return Png;
-        if (StrStrI(L",bmp,dib,", ext))  return Bmp;
-        if (StrStrI(L",gif,", ext))  return Gif;
-        if (StrStrI(L",tiff,tif,", ext))  return Tiff;
-        if (StrStrI(L",ico,icon,", ext))  return Icon;
-        if (StrStrI(L",psd,", ext))  return Psd;
-        if (StrStrI(L",tga,", ext))  return Tga;
-        if (StrStrI(L",webp,", ext))  return Webp;
-        if (StrStrI(ImageExtRaw(), ext))  return Raw;
-        if (StrStrI(L",dds,", ext))  return Dds;
-        if (StrStrI(L",dng,", ext))  return Dng;
-        if (StrStrI(L",svg,", ext))  return Svg;
-        if (StrStrI(L",heif,heic,", ext))  return Heif;
-        if (StrStrI(L",avif,", ext))  return Avif;
-        if (StrStrI(ImageExtFreeimage(), ext))  return Freeimage;
+
+        CString   ext = PathFindExtension(filepath);
+        if (ext.GetLength() >= 2)
+        {
+            ext.MakeLower();
+            ext.SetAt(0, ',');
+            ext.AppendChar(',');
+
+            if (wcsstr(ExtJpeg, ext))  return Jpeg;
+            if (wcsstr(L",png,", ext))  return Png;
+            if (wcsstr(L",bmp,dib,", ext))  return Bmp;
+            if (wcsstr(L",gif,", ext))  return Gif;
+            if (wcsstr(L",tiff,tif,", ext))  return Tiff;
+            if (wcsstr(L",ico,icon,", ext))  return Icon;
+            if (wcsstr(L",psd,", ext))  return Psd;
+            if (wcsstr(L",tga,", ext))  return Tga;
+            if (wcsstr(L",webp,", ext))  return Webp;
+            if (wcsstr(ExtRaw, ext))  return Raw;
+            if (wcsstr(L",dds,", ext))  return Dds;
+            if (wcsstr(L",dng,", ext))  return Dng;
+            if (wcsstr(L",svg,", ext))  return Svg;
+            if (wcsstr(L",heif,heic,", ext))  return Heif;
+            if (wcsstr(L",avif,", ext))  return Avif;
+            if (wcsstr(ExtFreeimage, ext))  return Freeimage;
+        }
         return Unknown;
     }
 
 public:
-    static PCWSTR ImageExtJpeg() { return L",jpg,jpeg,jfif,jpe,"; }
-    static PCWSTR ImageExtRaw() { return L",3fr,ari,arw,bay,cap,cr2,cr3,crw,dcs,dcr,drf,eip,erf,fff,iiq,k25,kdc,mef,mos,mrw,nef,nrw,orf,ori,pef,ptx,pxn,raf,raw,rw2,rwl,sr2,srf,srw,x3f,dng,"; }
-    static PCWSTR ImageExtFreeimage() { return L",exr,g3,hdr,iff,lbm,j2k,j2c,jp2,jxr,wdp,hdp,pcd,pcx,pfm,pct,pict,pic,pbm,pgm,ppm,ras,sgi,rgb,rgba,bw,wap,wbmp,wbm,xbm,xpm,"; }
+    static constexpr PCWSTR   ExtJpeg = L",jpg,jpeg,jfif,jpe,";
+    static constexpr PCWSTR   ExtRaw = L",3fr,ari,arw,bay,cap,cr2,cr3,crw,dcs,dcr,drf,eip,erf,fff,iiq,k25,kdc,mef,mos,mrw,nef,nrw,orf,ori,pef,ptx,pxn,raf,raw,rw2,rwl,sr2,srf,srw,x3f,dng,";
+    static constexpr PCWSTR   ExtFreeimage = L",exr,g3,hdr,iff,lbm,j2k,j2c,jp2,jxr,wdp,hdp,pcd,pcx,pfm,pct,pict,pic,pbm,pgm,ppm,ras,sgi,rgb,rgba,bw,wap,wbmp,wbm,xbm,xpm,";
 };
 
 _PHOXO_NAMESPACE_END

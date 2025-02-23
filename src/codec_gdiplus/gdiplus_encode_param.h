@@ -17,7 +17,7 @@ struct GdiplusSaveParam
 
         if ((image_type == ImageFormat::Jpeg) && jpeg_quality)
         {
-            m_encoder_param.reset(new Gdiplus::EncoderParameters);
+            m_encoder_param = std::make_unique<Gdiplus::EncoderParameters>();
             m_encoder_param->Count = 1;
             m_encoder_param->Parameter[0] = { Gdiplus::EncoderQuality, 1, Gdiplus::EncoderParameterValueTypeLong, &m_jpeg_quality };
         }

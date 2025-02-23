@@ -11,7 +11,7 @@ _PHOXO_EFFECT_BEGIN
 class Grayscale : public PixelIterator<Grayscale>
 {
 public:
-    static void HandlePixel(Image& img, int x, int y, RGBA32bit* px, ImageEffect& effect)
+    static void HandlePixel(Image&, int, int, RGBA32bit* px, ImageEffect&)
     {
         px->r = px->g = px->b = Color::GetGrayscale(px);
     }
@@ -68,7 +68,7 @@ private:
     }
 
 public:
-    static void HandlePixel(Image& img, int x, int y, RGBA32bit* px, ImageEffect& effect)
+    static void HandlePixel(Image&, int, int, RGBA32bit* px, ImageEffect&)
     {
         Color::Premultiply(*px);
     }
@@ -89,9 +89,35 @@ private:
     }
 
 public:
-    static void HandlePixel(Image& img, int x, int y, RGBA32bit* px, ImageEffect& effect)
+    static void HandlePixel(Image&, int, int, RGBA32bit* px, ImageEffect&)
     {
         Color::UnPremultiply(*px);
+    }
+};
+
+/// Overlay color (32 bit).
+class ColorOverlay : public PixelIterator<ColorOverlay>
+{
+private:
+    Color   m_cr;
+    bool   m_apply_premultiply;
+
+public:
+    // the alpha value of the cr will be ignored.
+    ColorOverlay(Color cr, bool apply_premultiply = true) : m_cr(cr), m_apply_premultiply(apply_premultiply) {}
+
+    static void HandlePixel(Image&, int, int, RGBA32bit* px, ColorOverlay& eff)
+    {
+        memcpy(px, &eff.m_cr, 3);
+        if (eff.m_apply_premultiply)
+        {
+            Color::Premultiply(*px);
+        }
+    }
+
+    void OnAfterProcess(Image& img) override
+    {
+        if (m_apply_premultiply) { img.SetPremultiplied(true); }
     }
 };
 

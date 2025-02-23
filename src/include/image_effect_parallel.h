@@ -12,7 +12,7 @@ private:
     PTP_WORK   m_work = NULL;
 
 public:
-    ParallelTask(const RECT& task_region, ImageEffect& effect, Image& img) : m_task_region(task_region), m_effect(effect), m_img(img) {}
+    ParallelTask(const CRect& task_region, ImageEffect& effect, Image& img) : m_task_region(task_region), m_effect(effect), m_img(img) {}
 
     ~ParallelTask() // not virtual
     {
@@ -134,9 +134,8 @@ private:
         if (m_running_task.empty())
             return;
 
-        DWORD   ret = ::WaitForMultipleObjects((DWORD)m_running_finish_event.size(), m_running_finish_event.data(), wait_all, INFINITE);
-        DWORD   index = ret - WAIT_OBJECT_0;
-        if ((ret >= WAIT_OBJECT_0) && (index < m_running_task.size()))
+        DWORD   index = ::WaitForMultipleObjects((DWORD)m_running_finish_event.size(), m_running_finish_event.data(), wait_all, INFINITE) - WAIT_OBJECT_0;
+        if (index < m_running_task.size())
         {
             if (wait_all)
                 return;

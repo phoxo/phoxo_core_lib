@@ -56,8 +56,7 @@ public:
 
     static IWICColorContextPtr GetFirstColorContext(IWICBitmapFrameDecode* frame_decode)
     {
-        UINT   actual_count = GetColorContextsCount(frame_decode);
-        if (actual_count)
+        if (UINT actual_count = GetColorContextsCount(frame_decode))
         {
             IWICColorContextPtr   icc = CreateColorContext();
             if (frame_decode->GetColorContexts(1, &icc.GetInterfacePtr(), &actual_count) == S_OK)
@@ -103,9 +102,9 @@ public:
 
     static UINT GetBitsPerPixel(REFWICPixelFormatGUID fmt)
     {
-        IWICPixelFormatInfoPtr   info = CreateComponentInfo(fmt);
         UINT   bpp = 0;
-        if (info) { info->GetBitsPerPixel(&bpp); }
+        if (IWICPixelFormatInfoPtr info = CreateComponentInfo(fmt)) // implicit conversion
+            info->GetBitsPerPixel(&bpp);
         return bpp;
     }
 
@@ -180,10 +179,10 @@ public:
         return t;
     }
 
-    static IWICBitmapDecoderPtr CreateDecoderFromFilename(PCWSTR image_path, DWORD desired_access = GENERIC_READ)
+    static IWICBitmapDecoderPtr CreateDecoderFromFilename(PCWSTR filepath, DWORD desired_access = GENERIC_READ)
     {
         IWICBitmapDecoderPtr   t;
-        g_factory->CreateDecoderFromFilename(image_path, NULL, desired_access, WICDecodeMetadataCacheOnDemand, &t);
+        g_factory->CreateDecoderFromFilename(filepath, NULL, desired_access, WICDecodeMetadataCacheOnDemand, &t);
         return t;
     }
 
@@ -194,16 +193,16 @@ public:
         return t;
     }
 
-    static IWICBitmapDecoderPtr CreateDecoderFromFileNoLock(PCWSTR image_path)
+    static IWICBitmapDecoderPtr CreateDecoderFromFileNoLock(PCWSTR filepath)
     {
-        auto   t = CreateStreamFromFileNoLock(image_path);
+        auto   t = CreateStreamFromFileNoLock(filepath);
         return CreateDecoderFromStream(t);
     }
 
-    static IStreamPtr CreateStreamFromFileNoLock(PCWSTR image_path)
+    static IStreamPtr CreateStreamFromFileNoLock(PCWSTR filepath)
     {
         IStreamPtr   t;
-        SHCreateStreamOnFileEx(image_path, STGM_FAILIFTHERE | STGM_READ | STGM_SHARE_DENY_NONE, FILE_ATTRIBUTE_NORMAL, FALSE, NULL, &t);
+        SHCreateStreamOnFileEx(filepath, STGM_FAILIFTHERE | STGM_READ | STGM_SHARE_DENY_NONE, FILE_ATTRIBUTE_NORMAL, FALSE, NULL, &t);
         return t;
     }
 

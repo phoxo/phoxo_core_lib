@@ -24,9 +24,9 @@ public:
         HSLtoRGB(h, s, l, px);
     }
 
-    static void HandlePixel(Image& img, int x, int y, RGBA32bit* px, HueSaturation& effect)
+    static void HandlePixel(Image&, int, int, RGBA32bit* px, HueSaturation& eff)
     {
-        effect.Process(px);
+        eff.Process(px);
     }
 
     static void HSLtoRGB(double h, double s, double l, RGBA32bit* out)

@@ -30,9 +30,9 @@ private:
     }
 
 public:
-    static void HandlePixel(Image& img, int x, int y, RGBA32bit* px, ColorLUT& effect)
+    static void HandlePixel(Image&, int, int, RGBA32bit* px, ColorLUT& eff)
     {
-        effect.Process(*px);
+        eff.Process(*px);
     }
 };
 

@@ -7,6 +7,14 @@ _PHOXO_BEGIN
 class CodecGdiplus
 {
 public:
+    static Image LoadFile(PCWSTR filepath)
+    {
+        Image   t;
+        Gdiplus::Bitmap   gpbmp(filepath);
+        Load(gpbmp, t);
+        return t;
+    }
+
     static bool Load(Gdiplus::Bitmap& src, Image& img, Gdiplus::PixelFormat desired_format = PixelFormat32bppARGB)
     {
         int   attr = ((desired_format == PixelFormat32bppPARGB) ? Image::PremultipliedAlpha : 0);
