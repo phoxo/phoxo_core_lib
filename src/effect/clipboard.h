@@ -99,8 +99,8 @@ class GetClipboard : public ImageEffect
     {
         if (::OpenClipboard(NULL))
         {
-            auto   bmp = CWICFunc::CreateBitmapFromHBITMAP((HBITMAP)::GetClipboardData(CF_BITMAP), WICBitmapUseAlpha);
-            CodecWIC::Load(bmp, img, WICNormal32bpp);
+            IWICBitmapPtr   bmp = WIC::CreateBitmapFromHBITMAP((HBITMAP)::GetClipboardData(CF_BITMAP), WICBitmapUseAlpha);
+            img = ImageHandler::Make(bmp, WICNormal32bpp);
             ::CloseClipboard();
         }
     }

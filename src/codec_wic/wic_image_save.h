@@ -1,10 +1,9 @@
 #pragma once
-#include "wic_metadata.h"
 
 class CWICFileEncoder
 {
 private:
-    GUID   m_image_format = GUID_NULL;
+    GUID   m_image_format = {};
     IWICBitmapEncoderPtr   m_encoder;
     IWICStreamPtr   m_stream;
     IWICBitmapFrameEncodePtr   m_frame_encode;
@@ -12,8 +11,8 @@ private:
 public:
     CWICFileEncoder(PCWSTR filepath, int jpeg_quality = 80)
     {
-        m_image_format = CWICInstalledCodec::FindContainerFormat(filepath);
-        HRESULT   hr = CWICFunc::g_factory->CreateEncoder(m_image_format, NULL, &m_encoder);
+        m_image_format = WIC::GetSystemCodecFormat(filepath);
+        HRESULT   hr = WIC::g_factory->CreateEncoder(m_image_format, NULL, &m_encoder);
         if (!m_encoder)
         {
             assert(hr == WINCODEC_ERR_COMPONENTNOTFOUND); // 不支持的图像编码格式
@@ -22,7 +21,7 @@ public:
 
         try
         {
-            CWICFunc::g_factory->CreateStream(&m_stream);
+            WIC::g_factory->CreateStream(&m_stream);
             if (m_stream->InitializeFromFilename(filepath, GENERIC_WRITE) == S_OK) // 如果文件写保护会失败
             {
                 m_encoder->Initialize(m_stream, WICBitmapEncoderNoCache);
@@ -50,7 +49,7 @@ public:
 
             IWICMetadataQueryWriterPtr   orient;
             m_frame_encode->GetMetadataQueryWriter(&orient);
-            CWICMetadataOrientation::Write(orient, 1); // clear orientation tag
+            WIC::OrientationTag::Write(orient, 1); // clear orientation tag
         }
     }*/
 
@@ -62,7 +61,7 @@ public:
         }
     }
 
-    bool WriteFile(IWICBitmapSourcePtr src)
+    bool WriteFile(IWICBitmapSource* src)
     {
         bool   t[3] = {};
         try
@@ -71,8 +70,10 @@ public:
             t[1] = (m_frame_encode->Commit() == S_OK);
             t[2] = (m_encoder->Commit() == S_OK);
         }
-        catch (_com_error&) { assert(false); }
-        return (t[0] && t[1] && t[2]);
+        catch (_com_error&) {}
+
+        bool   ret = (t[0] && t[1] && t[2]); assert(ret);
+        return ret;
     }
 
 private:
@@ -100,7 +101,7 @@ private:
         {
             IWICMetadataQueryWriterPtr   writer;
             m_frame_encode->GetMetadataQueryWriter(&writer);
-            CWICMetadataOrientation::Write(writer, orientation);
+            WIC::OrientationTag::Write(writer, orientation);
         }
     }
 

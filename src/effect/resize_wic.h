@@ -13,7 +13,6 @@ public:
     WICBitmapInterpolationMode   m_resize_mode = WICBitmapInterpolationModeHighQualityCubic;
 
 public:
-    ResizeWic(int width, int height) : m_new_size(width, height) {}
     ResizeWic(CSize new_size) : m_new_size(new_size) {}
 
 private:
@@ -24,11 +23,11 @@ private:
 
     void ProcessEntire(Image& img, IProgressListener*) override
     {
-        auto   format = (img.IsPremultiplied() ? WICPremultiplied32bpp : WICNormal32bpp);
-        auto   old = CWICFunc::CreateBitmapFromHBITMAP(img, img.IsPremultiplied() ? WICBitmapUsePremultipliedAlpha : WICBitmapUseAlpha);
+        auto   format = img.IsPremultiplied() ? WICPremultiplied32bpp : WICNormal32bpp;
+        auto   old = WIC::CreateBitmapFromHBITMAP(img, img.IsPremultiplied() ? WICBitmapUsePremultipliedAlpha : WICBitmapUseAlpha);
         img.Destroy();
-        auto   scaled = CWICFunc::ScaleBitmap(old, m_new_size, m_resize_mode);
-        CodecWIC::Load(scaled, img, format);
+        auto   scaled = WIC::ScaleBitmap(old, m_new_size, m_resize_mode);
+        img = ImageHandler::Make(scaled, format);
     }
 };
 

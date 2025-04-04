@@ -1,8 +1,4 @@
 #pragma once
-/// @cond
-#include <shlwapi.h>
-#pragma comment (lib, "Shlwapi.lib")
-/// @endcond
 
 _PHOXO_BEGIN
 
@@ -57,9 +53,9 @@ public:
 
     static IStreamPtr CreateMemStream(const void* ptr, UINT mem_size)
     {
-        IStreamPtr   v;
-        if (ptr) { v.Attach(SHCreateMemStream((const BYTE*)ptr, mem_size)); }
-        return v;
+        IStreamPtr   t;
+        if (ptr) { t.Attach(SHCreateMemStream((const BYTE*)ptr, mem_size)); }
+        return t;
     }
 };
 

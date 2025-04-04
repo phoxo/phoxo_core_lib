@@ -12,16 +12,12 @@ private:
 
 public:
     /// create memory dc and select bmp in.
-    BitmapHDC(HBITMAP bmp, HBRUSH fill_background = NULL)
+    BitmapHDC(HBITMAP bmp)
     {
         m_old = SelectObject(m_dc, bmp);
         m_font_bak = GetCurrentObject(m_dc, OBJ_FONT);
         SetBkMode(m_dc, TRANSPARENT);
         SetStretchBltMode(m_dc, COLORONCOLOR);
-        if (fill_background)
-        {
-            ::FillRect(m_dc, CRect(CPoint(), Utils::GetBitmapSize(bmp)), fill_background);
-        }
     }
 
     ~BitmapHDC()

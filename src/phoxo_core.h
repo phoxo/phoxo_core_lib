@@ -52,12 +52,13 @@ public:
         Gdiplus::GdiplusStartupInput   si;
         Gdiplus::GdiplusStartup(&m_token, &si, NULL); // init GDIPLUS
 
-        CWICFunc::CreateWICFactory(); // init WIC
+        WIC::CreateWICFactory(); // init WIC
+        WIC::GetSystemCodecFormat(L"");
     }
 
     static void Uninit()
     {
-        CWICFunc::g_factory = nullptr;
+        WIC::g_factory = nullptr;
         Gdiplus::GdiplusShutdown(m_token);
         if (SUCCEEDED(m_COM_result))
         {

@@ -1,14 +1,10 @@
 #pragma once
-#include "wic_func.h"
-#include "wic_metadata_enumerator.h"
-#include "wic_metadata_orientation.h"
-#include "wic_installed_codec.h"
 
-class CWICMetadata : public CWICMetadataEnumerator
+class CWICMetadata : public WIC::MetadataIterator
 {
 public:
     CString   m_date_taken;
-    int   m_orientation = 0;
+    int       m_orientation = 0;
     CString   m_GPS;
     int       m_dpi = 0;
     CString   m_exif_equip_make;
@@ -28,7 +24,7 @@ public:
     void Read(IWICBitmapFrameDecode* frame_decode)
     {
         if (!frame_decode) { return; }
-        m_dpi = CWICFunc::GetResolution(frame_decode);
+        m_dpi = WIC::GetResolution(frame_decode);
         EnumAllMetadata(frame_decode);
     }
 
@@ -39,7 +35,7 @@ public:
 
     WICBitmapTransformOptions GetRotateFlag() const
     {
-        return CWICMetadataOrientation::ToWICFlipRotate(m_orientation);
+        return WIC::OrientationTag::ToWICFlipRotate(m_orientation);
     }
 
     static void CanonicalizeTakenDate(CString& t)
@@ -54,7 +50,7 @@ public:
     }
 
 private:
-    void OnBeforeEnumReader(IWICMetadataReader* reader, REFCLSID meta_format) override
+    void OnBeforeEnumReader(IWICMetadataReader* reader, REFGUID meta_format) override
     {
         if (meta_format == GUID_MetadataFormatGps)
         {
@@ -62,7 +58,7 @@ private:
         }
     }
 
-    void OnEnumMetadataItem(REFCLSID meta_format, const CComPROPVARIANT& item_id, const CComPROPVARIANT& val) override
+    void OnEnumMetadataItem(REFGUID meta_format, const CComPROPVARIANT& item_id, const CComPROPVARIANT& val) override
     {
         if (item_id.vt != VT_UI2)
             return;
@@ -121,14 +117,12 @@ private:
     static CString ReadGPSxy(IWICMetadataReader* reader, USHORT k1, USHORT k2, PCWSTR k3)
     {
         CString   ret;
-        CComPROPVARIANT   prop;
-        if (reader->GetValue(NULL, CComPROPVARIANT(k1), &prop) == S_OK)
+        if (CComPROPVARIANT pv; reader->GetValue(NULL, CComPROPVARIANT(k1), &pv) == S_OK)
         {
-            float   loc = prop.ParseGPSLocation();
-            prop.Clear();
-            if (reader->GetValue(NULL, CComPROPVARIANT(k2), &prop) == S_OK)
+            float   loc = pv.ParseGPSLocation();
+            if (CComPROPVARIANT v2; reader->GetValue(NULL, CComPROPVARIANT(k2), &v2) == S_OK)
             {
-                if (prop.ParseString().CompareNoCase(k3) == 0)
+                if (v2.ParseString().CompareNoCase(k3) == 0)
                     loc *= -1;
             }
             ret.Format(L"%f", loc);

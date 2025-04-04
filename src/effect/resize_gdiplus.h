@@ -25,10 +25,10 @@ private:
     void ProcessEntire(Image& img, IProgressListener*) override
     {
         Image   old;
-        img.SwapImage(old);
+        img.Swap(old);
         auto   src = CodecGdiplus::CreateBitmapReference(old);
 
-        img.Create(m_new_size.cx, m_new_size.cy, old.ColorBits(), old.GetAttribute());
+        img.Create(m_new_size, old.ColorBits(), old.GetAttribute());
         auto   dest = CodecGdiplus::CreateBitmapReference(img);
         if (src && dest)
         {

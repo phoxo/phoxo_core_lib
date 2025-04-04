@@ -13,11 +13,11 @@ private:
 public:
     CWICMultiframeLoader(PCWSTR image_path, bool use_embedded_icc = true)
     {
-        m_decoder = CWICFunc::CreateDecoderFromFileNoLock(image_path);
-        m_format = CWICFunc::GetContainerFormat(m_decoder);
-        m_total = CWICFunc::GetFrameCount(m_decoder);
+        m_decoder = WIC::CreateDecoderFromFileNoLock(image_path);
+        m_format = WIC::GetContainerFormat(m_decoder);
+        m_total = WIC::GetFrameCount(m_decoder);
         m_current_frame = 0;
-        m_frame = CWICFunc::GetFrame(m_decoder, 0);
+        m_frame = WIC::GetFrame(m_decoder, 0);
         m_use_embedded_icc = use_embedded_icc;
     }
 
@@ -31,7 +31,7 @@ public:
         m_current_frame++;
         if (m_current_frame < m_total)
         {
-            m_frame = CWICFunc::GetFrame(m_decoder, m_current_frame);
+            m_frame = WIC::GetFrame(m_decoder, m_current_frame);
         }
         else
         {
@@ -39,9 +39,9 @@ public:
         }
     }
 
-    void LoadCurrentFrame(phoxo::Image& out_image, REFWICPixelFormatGUID desired_format) const
+    phoxo::Image LoadCurrentFrame(REFWICPixelFormatGUID desired_format) const
     {
-        phoxo::CodecWIC::LoadFrame(m_frame, out_image, desired_format, m_use_embedded_icc);
+        return phoxo::CodecWIC::LoadFrame(m_frame, desired_format, m_use_embedded_icc);
     }
 
     int GetDuration() const
@@ -59,7 +59,7 @@ public:
     }
 
 private:
-    class CFindDurationTag : private CWICMetadataEnumerator
+    class CFindDurationTag : private WIC::MetadataIterator
     {
     private:
         const CComPROPVARIANT   m_meta_key;
@@ -77,7 +77,7 @@ private:
         }
 
     private:
-        void OnBeforeEnumReader(IWICMetadataReader* reader, REFCLSID meta_format) override
+        void OnBeforeEnumReader(IWICMetadataReader* reader, REFGUID meta_format) override
         {
             CComPROPVARIANT   val;
             reader->GetValue(NULL, &m_meta_key, &val);
@@ -87,23 +87,4 @@ private:
             }
         }
     };
-
-public:
-    static UINT GetIconMaxSizeFrameIndex(IWICBitmapDecoder* decoder)
-    {
-        UINT   total = CWICFunc::GetFrameCount(decoder);
-        UINT   index = 0;
-        int   max_size = 0;
-        for (UINT i = 0; i < total; i++)
-        {
-            auto   frame = CWICFunc::GetFrame(decoder, i);
-            int   frame_size = CWICFunc::GetBitmapSize(frame).cx;
-            if (frame_size > max_size)
-            {
-                max_size = frame_size;
-                index = i;
-            }
-        }
-        return index;
-    }
 };

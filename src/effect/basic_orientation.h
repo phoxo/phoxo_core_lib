@@ -39,7 +39,7 @@ private:
 protected:
     void RInit(Image& img)
     {
-        img.SwapImage(m_bak);
+        img.Swap(m_bak);
         img.Create(m_bak.Height(), m_bak.Width(), m_bak.ColorBits(), m_bak.GetAttribute());
     }
 

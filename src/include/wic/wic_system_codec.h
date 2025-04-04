@@ -1,25 +1,25 @@
 #pragma once
 
-class CWICInstalledCodec
+namespace WIC
 {
-private:
+    _PHOXO_INTERNAL_BEGIN
     struct CodecInfo
     {
-        CString   m_format_ext; // such as : ",.jpeg,.jpe,.jpg,.jfif,.exif,"  a comma-wrapped
-        CLSID   m_container_format; // such as : GUID_ContainerFormatJpeg
+        CString   m_exts; // such as : ",.jpeg,.jpe,.jpg,.jfif,.exif,"  a comma-wrapped
+        GUID   m_format; // such as : GUID_ContainerFormatJpeg
 
         CodecInfo(IWICBitmapCodecInfo& r)
         {
-            r.GetContainerFormat(&m_container_format);
+            r.GetContainerFormat(&m_format);
 
             UINT   read = 0;
             r.GetFileExtensions(0, NULL, &read);
             if (read)
             {
-                r.GetFileExtensions(read, m_format_ext.GetBuffer(read), &read);
-                m_format_ext.ReleaseBuffer();
-                m_format_ext.MakeLower();
-                m_format_ext = L"," + m_format_ext + L",";
+                r.GetFileExtensions(read, m_exts.GetBuffer(read), &read);
+                m_exts.ReleaseBuffer();
+                m_exts.MakeLower();
+                m_exts = L"," + m_exts + L",";
             }
         }
     };
@@ -29,7 +29,7 @@ private:
         AllDecoderList()
         {
             IEnumUnknownPtr   root;
-            CWICFunc::g_factory->CreateComponentEnumerator(WICDecoder, WICComponentEnumerateDefault, &root);
+            WIC::g_factory->CreateComponentEnumerator(WICDecoder, WICComponentEnumerateDefault, &root);
             if (!root)
                 return;
 
@@ -40,17 +40,15 @@ private:
                 {
                     emplace_back(*ifp);
                 }
-                unk = nullptr;
             }
-
             shrink_to_fit();
         }
     };
+    _PHOXO_NAMESPACE_END
 
-public:
-    static CLSID FindContainerFormat(PCWSTR filepath)
+    inline GUID GetSystemCodecFormat(PCWSTR filepath)
     {
-        static const AllDecoderList   s_decoders;
+        static const internal::AllDecoderList   s_decoders;
 
         CString   ext = PathFindExtension(filepath);
         if (!ext.IsEmpty())
@@ -59,10 +57,10 @@ public:
             ext = L"," + ext + L",";
             for (auto& iter : s_decoders)
             {
-                if (wcsstr(iter.m_format_ext, ext))
-                    return iter.m_container_format;
+                if (wcsstr(iter.m_exts, ext))
+                    return iter.m_format;
             }
         }
-        return CLSID_NULL;
+        return GUID_NULL;
     }
-};
+}

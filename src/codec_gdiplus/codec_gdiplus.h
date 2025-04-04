@@ -7,26 +7,16 @@ _PHOXO_BEGIN
 class CodecGdiplus
 {
 public:
-    static Image LoadFile(PCWSTR filepath)
+    static Image LoadFile(PCWSTR filepath, Gdiplus::PixelFormat output_format = PixelFormat32bppARGB)
     {
-        Image   t;
-        Gdiplus::Bitmap   gpbmp(filepath);
-        Load(gpbmp, t);
-        return t;
+        auto   sp = WIC::CreateStreamFromFileNoLock(filepath);
+        return LoadStream(sp, output_format);
     }
 
-    static bool Load(Gdiplus::Bitmap& src, Image& img, Gdiplus::PixelFormat desired_format = PixelFormat32bppARGB)
+    static Image LoadStream(IStream* sp, Gdiplus::PixelFormat output_format)
     {
-        int   attr = ((desired_format == PixelFormat32bppPARGB) ? Image::PremultipliedAlpha : 0);
-        UINT   bpp = Gdiplus::GetPixelFormatSize(desired_format);
-        if (img.Create(src.GetWidth(), src.GetHeight(), bpp, attr))
-        {
-            Gdiplus::BitmapData   bd { (UINT)img.Width(), (UINT)img.Height(), img.GetStride(), desired_format, img.GetMemStart() };
-            Gdiplus::Rect   trc(0, 0, img.Width(), img.Height());
-            auto   b = src.LockBits(&trc, Gdiplus::ImageLockModeRead | Gdiplus::ImageLockModeUserInputBuf, desired_format, &bd); assert(b == Gdiplus::Ok);
-            src.UnlockBits(&bd);
-        }
-        return img.IsValid();
+        Gdiplus::Bitmap   src(sp);
+        return ImageHandler::Make(src, output_format);
     }
 
     static bool SaveFile(PCWSTR filepath, const Image& img, int jpeg_quality = 0, int dpi = 0)
@@ -47,7 +37,7 @@ public:
     static std::unique_ptr<Gdiplus::Bitmap> CreateBitmapReference(const Image& img)
     {
         if (!img) { assert(false); return nullptr; }
-        return std::make_unique<Gdiplus::Bitmap>(img.Width(), img.Height(), img.GetStride(), GetPixelFormat(img), (PBYTE)img.GetMemStart());
+        return std::make_unique<Gdiplus::Bitmap>(img.Width(), img.Height(), img.GetStride(), GetPixelFormat(img), img.GetMemStart());
     }
 
 private:

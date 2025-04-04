@@ -27,12 +27,6 @@ public:
     {
         return std::fabs(a - b) < std::numeric_limits<T>::epsilon();
     }
-
-    static int Rand()
-    {
-        static long   s_rand_hold = (long)::GetTickCount();
-        return (((s_rand_hold = s_rand_hold * 214013L + 2531011L) >> 16) & 0x7fff); // RAND_MAX
-    }
 };
 
 _PHOXO_NAMESPACE_END

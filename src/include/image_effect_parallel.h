@@ -18,7 +18,7 @@ public:
     {
         if (m_work)
         {
-            WaitForThreadpoolWorkCallbacks(m_work, FALSE);
+            WaitForThreadpoolWorkCallbacks(m_work, TRUE);
             CloseThreadpoolWork(m_work);
         }
     }

@@ -40,7 +40,7 @@ public:
     /// move constructor.
     Image(Image&& img)
     {
-        SwapImage(img);
+        Swap(img);
     }
     /// destructor.
     virtual ~Image() { Destroy(); }
@@ -60,7 +60,7 @@ public:
     {
         if (&other == this) { assert(false); return *this; }
         Destroy();
-        SwapImage(other);
+        Swap(other);
         return *this;
     }
     ///@}
@@ -68,6 +68,8 @@ public:
     /// @name Create / Destroy.
     ///@{
     /***/
+    bool Create(const SIZE& image_size, int bpp, int attribute) { return Create(image_size.cx, image_size.cy, bpp, attribute); }
+
     /// create a new image, bpp can be <span style='color:#FF0000'>8 , 24 , 32</span>.
     bool Create(int width, int height, int bpp, int attribute = 0)
     {
@@ -99,7 +101,7 @@ public:
     }
 
     /// swap the current image's data with img.
-    void SwapImage(Image& img)
+    void Swap(Image& img)
     {
         std::swap(img.m_attribute, m_attribute);
         std::swap(img.m_width, m_width);
@@ -152,7 +154,7 @@ public:
     /// equal stride * height
     int GetPixelBufferSize() const { return (m_stride * Height()); }
     /// get the starting address of the pixel.
-    void* GetMemStart() const { return m_pixel; }
+    BYTE* GetMemStart() const { return m_pixel; }
     int GetAttribute() const { return m_attribute; }
     operator HBITMAP() const { return m_DIB_Handle; }
     operator bool() const { return (m_pixel != 0); }

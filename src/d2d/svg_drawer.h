@@ -1,5 +1,5 @@
 #pragma once
-#include "render_target_creator.h"
+#include "render_target.h"
 
 class D2DSVGDrawer
 {
@@ -18,8 +18,8 @@ public:
     IWICBitmapPtr CreateBitmap(SIZE output_size, float scale) const
     {
         // from Windows 10 1703, build 15063. 版本太老返回NULL
-        auto   bmp = CWICFunc::CreateBitmap(output_size, WICPremultiplied32bpp); assert(bmp);
-        ID2D1DeviceContext5Ptr   dc5 = D2DRenderTargetCreator::CreateWicBitmapRenderTarget(m_factory, bmp); // <== 有隐式转换
+        auto   bmp = WIC::CreateBitmap(output_size, WICPremultiplied32bpp); assert(bmp);
+        ID2D1DeviceContext5Ptr   dc5 = D2D::CreateWicBitmapRenderTarget(m_factory, bmp); // <== 有隐式转换
         if (dc5 && m_stream)
         {
             if (scale != 1.0f)
@@ -43,8 +43,7 @@ private:
         {
             dc->BeginDraw();
             dc->DrawSvgDocument(svg);
-            dc->EndDraw();
-            return true;
+            return dc->EndDraw() == S_OK;
         }
         return false;
     }

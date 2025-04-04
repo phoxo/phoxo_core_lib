@@ -79,8 +79,7 @@ int main()
 
     phoxo::CoreLib::Init();
 
-    FImage   img;
-    CodecWIC::LoadFile(filepath, img);
+    FImage   img = CodecWIC::LoadFile(filepath, WICNormal32bpp, nullptr, true);
     std::cout << "Width: " << img.Width() << " , Height: " << img.Height() << std::endl;
 
     ApplyBrightness(img);

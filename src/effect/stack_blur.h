@@ -168,7 +168,7 @@ private:
             m_stack.AddWeight(px, weight);
             i++; px++;
         }
-        m_in.Add(px); // 可能会越界+0
+        m_in.Add(px); // 可能会越界，越界也没问题，反正是+0
     }
 };
 

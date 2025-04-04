@@ -3,6 +3,8 @@
 /// @cond
 #include <windows.h>
 #include <comdef.h> // for SDK app, must include this before include GDI+
+#include <shlwapi.h>
+#pragma comment (lib, "Shlwapi.lib")
 
 #include <cmath>
 #include <cassert>
@@ -11,6 +13,10 @@
 #include <vector>
 #include <deque>
 #include <algorithm>
+
+#ifndef GDIPVER
+    #define GDIPVER 0x0110
+#endif
 #include <GdiPlus.h>
 #pragma comment (lib, "GdiPlus.lib")
 /// @endcond
@@ -43,6 +49,16 @@ union RGBA32bit
 _PHOXO_NAMESPACE_END
 
 //-------------------------------------------------------------------------------------
+#include "wic/wic_interface.h"
+#include "wic/wic_interface2.h"
+#include "wic/wic_interface3.h"
+#include "wic/wic_bitmap_lock.h"
+#include "wic/wic_orientation_tag.h"
+#include "wic/wic_metadata_iterator.h"
+#include "wic/wic_metadata.h"
+#include "wic/wic_factory.h" // 这两个文件依赖全局 g_factory
+#include "wic/wic_system_codec.h"
+
 #include "base_utils.h"
 #include "base_bitmap_hdc.h"
 #include "base_math.h"

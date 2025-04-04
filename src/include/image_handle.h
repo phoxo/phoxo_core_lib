@@ -62,7 +62,7 @@ public:
         rc.IntersectRect(CRect(0, 0, img.Width(), img.Height()), rect_on_image);
         if (!rc.IsRectEmpty() &&
             (rc == rect_on_image) &&
-            output.Create(rc.Width(), rc.Height(), img.ColorBits(), img.GetAttribute()))
+            output.Create(rc.Size(), img.ColorBits(), img.GetAttribute()))
         {
             int   copy_bytes = output.Width() * img.ColorBits() / 8;
             for (int y = 0; y < output.Height(); y++)
@@ -91,6 +91,47 @@ public:
             return;
         }
         assert(false);
+    }
+    //@}
+
+    /// @name Create Image.
+    //@{
+    /// Creates an Image from a gdiplus bitmap.
+    static Image Make(Gdiplus::Bitmap& src, Gdiplus::PixelFormat output_format)
+    {
+        int   attr = (output_format == PixelFormat32bppPARGB) ? Image::PremultipliedAlpha : 0;
+        int   bpp = Gdiplus::GetPixelFormatSize(output_format);
+        UINT   width = src.GetWidth(), height = src.GetHeight();
+
+        Image   img;
+        if (img.Create(width, height, bpp, attr))
+        {
+            Gdiplus::BitmapData   bd{ width, height, img.GetStride(), output_format, img.GetMemStart() };
+            Gdiplus::Rect   rgn(0, 0, width, height);
+            auto   b = src.LockBits(&rgn, Gdiplus::ImageLockModeRead | Gdiplus::ImageLockModeUserInputBuf, output_format, &bd); assert(b == Gdiplus::Ok);
+            src.UnlockBits(&bd);
+        }
+        return img;
+    }
+
+    /// Creates an Image from a WIC bitmap.
+    static Image Make(IWICBitmapSource* src_bmp, WICPixelFormatGUID output_format)
+    {
+        int   attr = (output_format == WICPremultiplied32bpp) ? Image::PremultipliedAlpha : 0;
+        int   bpp = WIC::GetBitsPerPixel(output_format);
+        auto    src = WIC::ConvertFormat(src_bmp, output_format);
+        CSize   sz = WIC::GetBitmapSize(src);
+
+        Image   img;
+        if (img.Create(sz, bpp, attr))
+        {
+            // 如果没装hevc ext, heif文件CopyPixels返回0xc00d5212 (Unsupported File Format)
+            if (src->CopyPixels(NULL, img.GetStride(), img.GetPixelBufferSize(), img.GetMemStart()) == S_OK)
+                return img;
+        }
+        assert(false);
+        img.Destroy();
+        return img;
     }
     //@}
 };
