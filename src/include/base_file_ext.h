@@ -21,7 +21,9 @@ enum class ImageFormat
     Svg,
     Heif,
     Avif,
-    Freeimage,
+    StbLib,
+    Exr,
+    OpenJpeg,
 };
 
 /// Helper for parsing image file extensions.
@@ -41,21 +43,23 @@ public:
             ext.AppendChar(',');
 
             if (wcsstr(ExtJpeg, ext))  return Jpeg;
-            if (wcsstr(L",png,", ext))  return Png;
+            if (ext == L",png,")  return Png;
             if (wcsstr(L",bmp,dib,", ext))  return Bmp;
-            if (wcsstr(L",gif,", ext))  return Gif;
+            if (ext == L",gif,")  return Gif;
             if (wcsstr(L",tiff,tif,", ext))  return Tiff;
             if (wcsstr(L",ico,icon,", ext))  return Icon;
-            if (wcsstr(L",psd,", ext))  return Psd;
-            if (wcsstr(L",tga,", ext))  return Tga;
-            if (wcsstr(L",webp,", ext))  return Webp;
+            if (ext == L",psd,")  return Psd;
+            if (ext == L",tga,")  return Tga;
+            if (ext == L",webp,")  return Webp;
             if (wcsstr(ExtRaw, ext))  return Raw;
-            if (wcsstr(L",dds,", ext))  return Dds;
-            if (wcsstr(L",dng,", ext))  return Dng;
-            if (wcsstr(L",svg,", ext))  return Svg;
+            if (ext == L",dds,")  return Dds;
+            if (ext == L",dng,")  return Dng;
+            if (ext == L",svg,")  return Svg;
             if (wcsstr(L",heif,heic,", ext))  return Heif;
-            if (wcsstr(L",avif,", ext))  return Avif;
-            if (wcsstr(ExtFreeimage, ext))  return Freeimage;
+            if (ext == L",avif,")  return Avif;
+            if (wcsstr(L",hdr,ppm,pgm,", ext))  return StbLib;
+            if (ext == L",exr,")  return Exr;
+            if (wcsstr(L",j2k,jp2,", ext))  return OpenJpeg;
         }
         return Unknown;
     }
@@ -63,7 +67,6 @@ public:
 public:
     static constexpr PCWSTR   ExtJpeg = L",jpg,jpeg,jfif,jpe,";
     static constexpr PCWSTR   ExtRaw = L",3fr,ari,arw,bay,cap,cr2,cr3,crw,dcs,dcr,drf,eip,erf,fff,iiq,k25,kdc,mef,mos,mrw,nef,nrw,orf,ori,pef,ptx,pxn,raf,raw,rw2,rwl,sr2,srf,srw,x3f,dng,";
-    static constexpr PCWSTR   ExtFreeimage = L",exr,g3,hdr,iff,lbm,j2k,j2c,jp2,jxr,wdp,hdp,pcd,pcx,pfm,pct,pict,pic,pbm,pgm,ppm,ras,sgi,rgb,rgba,bw,wap,wbmp,wbm,xbm,xpm,";
 };
 
 _PHOXO_NAMESPACE_END

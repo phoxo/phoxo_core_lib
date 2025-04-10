@@ -22,6 +22,7 @@
 /// @endcond
 
 //-------------------------------------------------------------------------------------
+#define _PHOXO_NAMESPACE(name) namespace name {
 #define _PHOXO_BEGIN  namespace phoxo {
 #define _PHOXO_INTERNAL_BEGIN  namespace internal {
 #define _PHOXO_EFFECT_BEGIN  namespace effect {

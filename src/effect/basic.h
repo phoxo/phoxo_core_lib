@@ -117,7 +117,28 @@ public:
 
     void OnAfterProcess(Image& img) override
     {
-        if (m_apply_premultiply) { img.SetPremultiplied(true); }
+        img.SetPremultiplied(m_apply_premultiply);
+    }
+};
+
+/// Adjusts alpha channel by percentage (32 bit).£¨Î´ÊµÕ½£©
+class AlphaPercent : public PixelIterator<AlphaPercent>
+{
+private:
+    int   m_percent;
+
+    bool IsSupported(const Image& img) override
+    {
+        return (img.ColorBits() == 32) && !img.IsPremultiplied();
+    }
+
+public:
+    /// 0 <= percent <= 100
+    AlphaPercent(int percent) : m_percent(percent) {}
+
+    static void HandlePixel(Image&, int, int, RGBA32bit* px, AlphaPercent& eff)
+    {
+        px->a = (px->a * eff.m_percent + 50) / 100;
     }
 };
 

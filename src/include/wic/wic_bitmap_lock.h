@@ -31,9 +31,10 @@ namespace WIC
             assert(m_data);
         }
 
+        // 很多开源库输出是 32bppRGBA
         bool IsFormat32bpp() const
         {
-            return m_data && (m_width * 4 == m_stride) && (m_format == WICNormal32bpp);
+            return m_data && (m_width * 4 == m_stride);
         }
     };
 }

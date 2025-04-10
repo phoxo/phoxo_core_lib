@@ -68,7 +68,7 @@ public:
     /// @name Create / Destroy.
     ///@{
     /***/
-    bool Create(const SIZE& image_size, int bpp, int attribute) { return Create(image_size.cx, image_size.cy, bpp, attribute); }
+    bool Create(const SIZE& image_size, int bpp, int attribute = 0) { return Create(image_size.cx, image_size.cy, bpp, attribute); }
 
     /// create a new image, bpp can be <span style='color:#FF0000'>8 , 24 , 32</span>.
     bool Create(int width, int height, int bpp, int attribute = 0)

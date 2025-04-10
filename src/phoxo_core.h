@@ -34,7 +34,7 @@
 #include "effect/resize_gdiplus.h"
 #include "effect/resize_wic.h"
 
-#include "d2d/svg_drawer.h"
+#include "d2d/render_target.h"
 
 _PHOXO_BEGIN
 /// Init / Uninit

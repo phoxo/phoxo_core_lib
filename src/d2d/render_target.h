@@ -57,7 +57,7 @@ namespace D2D
         {
             render->CreateBitmapFromWicBitmap(src, &ret);
         }
-        ASSERT(ret);
+        assert(ret);
         return ret;
     }
 }
