@@ -4,20 +4,21 @@ namespace WIC
 {
     class MetadataIterator
     {
+    private:
+        std::deque<IWICMetadataReaderPtr>   m_waiting;
+
     public:
-        virtual ~MetadataIterator() {}
+        virtual ~MetadataIterator() = default;
 
         /// Calling this function in a constructor is prohibited because of callbacks during enum
         void EnumAllMetadata(IWICBitmapFrameDecode* frame_decode)
         {
-            std::deque<IWICMetadataReaderPtr>   waiting_enum;
-            GetFrameMetaReaders(frame_decode, waiting_enum);
-
-            while (waiting_enum.size())
+            AddRootFrameReaders(frame_decode);
+            while (m_waiting.size())
             {
-                auto   reader = waiting_enum.front();
-                waiting_enum.pop_front();
-                EnumSingleReader(reader, waiting_enum);
+                auto   reader = m_waiting.front();
+                m_waiting.pop_front();
+                EnumSingleReader(reader);
             }
         }
 
@@ -28,7 +29,7 @@ namespace WIC
         virtual void OnEnumMetadataItem(REFGUID meta_format, const CComPROPVARIANT& item_id, const CComPROPVARIANT& val) {}
 
     private:
-        void EnumSingleReader(IWICMetadataReader* reader, auto& waiting_enum)
+        void EnumSingleReader(IWICMetadataReader* reader)
         {
             UINT   item_count = GetMetadataItemCount(reader);
             if (!item_count)
@@ -47,12 +48,12 @@ namespace WIC
                 if (val.vt == VT_UNKNOWN)
                 {
                     IWICMetadataReaderPtr   child = val.punkVal; assert(child);
-                    waiting_enum.push_back(child);
+                    m_waiting.push_back(child);
                 }
             }
         }
 
-        static void GetFrameMetaReaders(IWICBitmapFrameDecode* frame_decode, auto& out_list)
+        void AddRootFrameReaders(IWICBitmapFrameDecode* frame_decode)
         {
             IWICMetadataBlockReaderPtr   block = frame_decode;
             UINT   count = GetFrameMetaReaderCount(block);
@@ -60,7 +61,7 @@ namespace WIC
             {
                 IWICMetadataReaderPtr   t;
                 block->GetReaderByIndex(i, &t);
-                out_list.push_back(t);
+                m_waiting.push_back(t); // 用的时候会验证为空
             }
         }
 

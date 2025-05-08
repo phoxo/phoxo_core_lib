@@ -5,8 +5,8 @@ class CWICMetadata : public WIC::MetadataIterator
 public:
     CString   m_date_taken;
     int       m_orientation = 0;
-    CString   m_GPS;
     int       m_dpi = 0;
+    CString   m_GPS;
     CString   m_exif_equip_make;
     CString   m_exif_equip_model;
     CString   m_exif_software_used;

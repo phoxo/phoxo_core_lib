@@ -25,7 +25,7 @@ public:
     {
         int   w = wnd_rect.Width();
         int   h = wnd_rect.Height();
-        if (obj_size.cx && obj_size.cy && (w > 0) && (h > 0))
+        if ((obj_size.cx > 0) && (obj_size.cy > 0) && (w > 0) && (h > 0))
         {
             if ((obj_size.cx > w) || (obj_size.cy > h))
             {
