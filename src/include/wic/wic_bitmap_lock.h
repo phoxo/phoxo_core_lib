@@ -36,5 +36,10 @@ namespace WIC
         {
             return m_data && (m_width * 4 == m_stride);
         }
+
+        void ReleaseLock()
+        {
+            m_lock = nullptr;
+        }
     };
 }

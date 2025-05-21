@@ -1,5 +1,4 @@
 #pragma once
-#include "render_target.h"
 
 namespace D2D
 {
@@ -7,38 +6,43 @@ namespace D2D
     {
     private:
         IStreamPtr   m_stream;
-        ID2D1FactoryPtr   m_factory;
 
     public:
-        SVGDrawer(IStream* svg_stream, ID2D1Factory* factory)
+        SVGDrawer(LPCVOID ptr, UINT length)
         {
-            m_stream = svg_stream;
-            m_factory = factory;
+            m_stream = phoxo::Utils::CreateMemStream(ptr, length);
         }
 
-        // 注意：输出格式是 premultiplied alpha
-        IWICBitmapPtr CreateBitmap(SIZE output_size, float scale) const
+        // 注意：只能渲染 premultiplied alpha
+        bool DrawSvg(IWICBitmap* target, float scale, ID2D1Factory* factory) const
         {
-            // from Windows 10 1703, build 15063. 版本太老返回NULL
-            auto   bmp = WIC::CreateBitmap(output_size, WICPremultiplied32bpp); assert(bmp);
-            ID2D1DeviceContext5Ptr   dc5 = CreateWicBitmapRenderTarget(m_factory, bmp); // <== 有隐式转换
-            if (dc5 && m_stream)
-            {
-                if (scale != 1.0f)
-                {
-                    dc5->SetTransform(D2D1::Matrix3x2F::Scale(scale, scale));
-                }
+            assert(WIC::GetPixelFormat(target) == WICPremultiplied32bpp);
 
-                if (DrawSvgDocument(dc5, output_size))
-                    return bmp;
+            D2D1_SIZE_F   viewport = GetViewportSize(target);
+            if (m_stream && (viewport.width > 0))
+            {
+                // 这里有隐式转换 RenderTarget -> DeviceContext , from Windows 10 1703, build 15063. 版本太老返回NULL
+                if (ID2D1DeviceContext5Ptr dc5 = CreateWicBitmapRenderTarget(factory, target))
+                {
+                    if (scale != 1)
+                    {
+                        dc5->SetTransform(D2D1::Matrix3x2F::Scale(scale, scale));
+                    }
+                    return DrawSvgDocument(dc5, viewport);
+                }
             }
-            return nullptr;
+            return false;
         }
 
     private:
-        bool DrawSvgDocument(ID2D1DeviceContext5* dc, SIZE output_size) const
+        static D2D1_SIZE_F GetViewportSize(IWICBitmap* target)
         {
-            D2D1_SIZE_F   view_size{ (float)output_size.cx, (float)output_size.cy };
+            auto   sz = WIC::GetBitmapSize(target);
+            return { (float)sz.cx, (float)sz.cy };
+        }
+
+        bool DrawSvgDocument(ID2D1DeviceContext5* dc, D2D1_SIZE_F view_size) const
+        {
             ID2D1SvgDocumentPtr   svg;
             dc->CreateSvgDocument(m_stream, view_size, &svg);
             if (svg)
