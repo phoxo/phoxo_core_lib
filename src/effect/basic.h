@@ -121,7 +121,7 @@ public:
     }
 };
 
-/// Adjusts alpha channel by percentage (32 bit).£¨Î´ÊµÕ½£©
+/// Adjusts alpha channel by percentage (32 bit).  (Never tested it)
 class AlphaPercent : public PixelIterator<AlphaPercent>
 {
 private:

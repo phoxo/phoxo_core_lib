@@ -23,6 +23,7 @@ public:
 
     bool IsWebp() const { return (m_format == GUID_ContainerFormatWebp); }
     bool IsGif() const { return (m_format == GUID_ContainerFormatGif); }
+    bool IsJxl() const { return (m_format == WIC::GUID_ContainerFormat_Jxl); }
     bool IsCurrentFrameValid() const { return (m_frame != NULL); }
     UINT GetCurrentFrameIndex() const { return m_current_frame; }
 
@@ -46,9 +47,9 @@ public:
 
     int GetDuration() const
     {
-        CFindDurationTag   finder(IsGif());
+        CFindDurationTag   finder(DurationKey());
         int   time = finder.FindDuration(m_frame);
-        if (IsGif())
+        if (IsGif() || IsJxl())
         {
             time = time * 10;
             if (!time)
@@ -59,6 +60,14 @@ public:
     }
 
 private:
+    CString DurationKey() const
+    {
+        if (IsGif()) return L"Delay";
+        if (IsWebp()) return L"FrameDuration";
+        if (IsJxl()) return L"DurationInTicks";
+        return L"";
+    }
+
     class CFindDurationTag : private WIC::MetadataIterator
     {
     private:
@@ -66,7 +75,7 @@ private:
         int   m_result = 0;
 
     public:
-        CFindDurationTag(bool is_gif) : m_meta_key(is_gif ? L"Delay" : L"FrameDuration")
+        CFindDurationTag(PCWSTR key) : m_meta_key(key)
         {
         }
 

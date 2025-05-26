@@ -21,6 +21,7 @@ enum class ImageFormat
     Svg,
     Heif,
     Avif,
+    Jxl,
     StbLib,
     Exr,
     OpenJpeg,
@@ -57,6 +58,7 @@ public:
             if (ext == L",svg,")  return Svg;
             if (wcsstr(L",heif,heic,", ext))  return Heif;
             if (ext == L",avif,")  return Avif;
+            if (ext == L",jxl,")  return Jxl;
             if (wcsstr(L",hdr,ppm,pgm,", ext))  return StbLib;
             if (ext == L",exr,")  return Exr;
             if (wcsstr(L",j2k,jp2,", ext))  return OpenJpeg;

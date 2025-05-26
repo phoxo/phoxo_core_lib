@@ -129,12 +129,12 @@ public:
     bool IsInside(const POINT& pt) const { return IsInside(pt.x, pt.y); }
 
     /// this function doesn't perform boundary checks, so <span style='color:#FF0000'>Crash</span> if y exceed.
-    BYTE* GetLinePtr(int y) const
+    inline BYTE* GetLinePtr(int y) const
     {
         assert(IsInside(0, y));
         return m_pixel + (y * m_stride);
     }
-    BYTE* GetPixel(int x, int y) const
+    inline BYTE* GetPixel(int x, int y) const
     {
         assert(IsInside(x, y));
         auto   py = GetLinePtr(y);
@@ -150,7 +150,8 @@ public:
     int Width() const { return m_width; }
     int Height() const { return m_height; }
     int ColorBits() const { return m_bpp; }
-    int GetStride() const { return m_stride; }
+    int Stride() const { return m_stride; }
+    int PixelCount() const { return m_width * m_height; }
     /// equal stride * height
     int GetPixelBufferSize() const { return (m_stride * Height()); }
     /// get the starting address of the pixel.

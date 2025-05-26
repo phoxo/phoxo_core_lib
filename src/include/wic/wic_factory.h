@@ -139,4 +139,20 @@ namespace WIC
         auto   dest = ConvertFormat(frame, output_format); assert(dest);
         return CreateBitmapFromSource(dest);
     }
+
+    static constexpr GUID   GUID_ContainerFormat_Jxl = { 0xfec14e3f, 0x427a, 0x4736, { 0xaa, 0xe6, 0x27, 0xed, 0x84, 0xf6, 0x93, 0x22 } };
+
+    inline bool IsDecoderMissing(REFGUID container)
+    {
+        IWICBitmapDecoderPtr   test;
+        auto   hr = g_factory->CreateDecoder(container, nullptr, &test);
+        return (hr == WINCODEC_ERR_COMPONENTNOTFOUND) || (hr == WINCODEC_ERR_COMPONENTINITIALIZEFAILURE);
+    }
+
+    inline bool IsEncoderMissing(REFGUID container)
+    {
+        IWICBitmapEncoderPtr   test;
+        auto   hr = g_factory->CreateEncoder(container, nullptr, &test);
+        return (hr == WINCODEC_ERR_COMPONENTNOTFOUND) || (hr == WINCODEC_ERR_COMPONENTINITIALIZEFAILURE);
+    }
 }

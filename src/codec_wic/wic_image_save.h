@@ -109,13 +109,14 @@ private:
     {
         try
         {
-            if (IsJPEG())
+            if (IsJPEG() || (m_image_format == WIC::GUID_ContainerFormat_Jxl))
             {
                 IPropertyBag2Ptr   prop;
                 m_encoder->CreateNewFrame(&m_frame_encode, &prop);
                 WriteImageQualityProperty(prop, jpeg_quality / 100.0f);
                 m_frame_encode->Initialize(prop);
-                SetOrientationTag(1); // 如果没有方向tag，以后快速旋转jpg会失败
+                if (IsJPEG())
+                    SetOrientationTag(1); // 如果没有方向tag，以后快速旋转jpg会失败
             }
             else
             {

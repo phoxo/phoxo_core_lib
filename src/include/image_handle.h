@@ -11,9 +11,8 @@ public:
         if (img.ColorBits() != 32)
             return false;
 
-        int   total = img.Width() * img.Height();
         auto   ptr = (const RGBA32bit*)img.GetMemStart();
-        return std::all_of(ptr, ptr + total, [](auto& pixel) {
+        return std::all_of(ptr, ptr + img.PixelCount(), [](auto& pixel) {
             return pixel.a == 0xFF;
         });
     }
@@ -106,7 +105,7 @@ public:
         Image   img;
         if (img.Create(width, height, bpp, attr))
         {
-            Gdiplus::BitmapData   bd{ width, height, img.GetStride(), output_format, img.GetMemStart() };
+            Gdiplus::BitmapData   bd{ width, height, img.Stride(), output_format, img.GetMemStart() };
             Gdiplus::Rect   rgn(0, 0, width, height);
             auto   b = src.LockBits(&rgn, Gdiplus::ImageLockModeRead | Gdiplus::ImageLockModeUserInputBuf, output_format, &bd); assert(b == Gdiplus::Ok);
             src.UnlockBits(&bd);
@@ -126,7 +125,7 @@ public:
         if (img.Create(sz, bpp, attr))
         {
             // 如果没装hevc ext, heif文件CopyPixels返回0xc00d5212 (Unsupported File Format)
-            if (src->CopyPixels(NULL, img.GetStride(), img.GetPixelBufferSize(), img.GetMemStart()) == S_OK)
+            if (src->CopyPixels(NULL, img.Stride(), img.GetPixelBufferSize(), img.GetMemStart()) == S_OK)
                 return img;
         }
         assert(false);
