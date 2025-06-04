@@ -95,7 +95,7 @@ public:
 
     void Output(RGBA32bit* p) const
     {
-        if (sa > 0)
+        if (sa > 0.4)
         {
             p->b = (BYTE)(sb / sa + 0.5);
             p->g = (BYTE)(sg / sa + 0.5);
@@ -104,7 +104,7 @@ public:
         }
         else
         {
-            *(int32_t*)p = 0;
+            *p = {};
         }
     }
 };

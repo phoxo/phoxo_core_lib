@@ -14,9 +14,13 @@
 
 // core
 #include "include/image.h"
-#include "include/image_handle.h"
 #include "include/image_effect_parallel.h"
 #include "include/post_implement.h"
+
+// image operation helpers
+#include "imageops/image_handle.h"
+#include "imageops/sampling_bilinear.h"
+#include "imageops/sampling_area_box.h"
 
 // codec
 #include "codec_gdiplus/codec_gdiplus.h"

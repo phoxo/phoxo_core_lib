@@ -3,6 +3,7 @@
 #include "basic_LUT.h"
 #include "basic_orientation.h"
 #include "hue_saturation.h"
+#include "checker_fill.h"
 
 _PHOXO_BEGIN
 _PHOXO_EFFECT_BEGIN

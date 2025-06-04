@@ -116,6 +116,8 @@ public:
     {
         return (BYTE)((30 * px->r + 59 * px->g + 11 * px->b) / 100);
     }
+
+    static constexpr RGBA32bit   Zero{};
 };
 
 _PHOXO_NAMESPACE_END

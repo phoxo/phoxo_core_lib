@@ -4,6 +4,7 @@ _PHOXO_BEGIN
 _PHOXO_EFFECT_BEGIN
 
 /// Iterate all pixels in the region (32 bit).
+/// Example: class UnsharpMask
 template<class T>
 class PixelIterator : public ImageEffect
 {

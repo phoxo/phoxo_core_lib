@@ -19,6 +19,8 @@
 #endif
 #include <GdiPlus.h>
 #pragma comment (lib, "GdiPlus.lib")
+using GPointF = Gdiplus::PointF;
+using GRectF = Gdiplus::RectF;
 /// @endcond
 
 //-------------------------------------------------------------------------------------
@@ -38,13 +40,19 @@ union RGBA32bit
     operator RGBQUAD() const { return quad; }
     void operator=(const RGBQUAD& c) { quad = c; }
 
-    template<class T>
-    void PremulSum(T& sb, T& sg, T& sr, T& sa, int coef) const
+    void PremulSum(double& sb, double& sg, double& sr, double& sa, double coef) const
     {
-        sb += (b * a) * coef;
-        sg += (g * a) * coef;
-        sr += (r * a) * coef;
-        sa += a * coef;
+        //  sb += (b * a) * coef;
+        //  sg += (g * a) * coef;
+        //  sr += (r * a) * coef;
+        //  sa += a * coef;
+
+        // The following code is slightly faster
+        double   ac = a * coef;
+        sb += b * ac;
+        sg += g * ac;
+        sr += r * ac;
+        sa += ac;
     }
 };
 _PHOXO_NAMESPACE_END
@@ -66,3 +74,4 @@ _PHOXO_NAMESPACE_END
 #include "base_file_ext.h"
 #include "progress_listener.h"
 #include "color.h"
+#include "pixel_func.h"

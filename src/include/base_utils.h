@@ -21,6 +21,14 @@ public:
         return CreateMemStream(ptr, SizeofResource(mod, hres));
     }
 
+    static float CalcFitZoomRatio(const CSize& target_area, const CSize& image_size)
+    {
+        assert(image_size.cx && image_size.cy);
+        float   dx = (float)target_area.cx / (float)image_size.cx;
+        float   dy = (float)target_area.cy / (float)image_size.cy;
+        return (std::min)({ dx, dy, 1.0f });
+    }
+
     static CRect CalculateFitWindow(SIZE obj_size, const CRect& wnd_rect)
     {
         int   w = wnd_rect.Width();

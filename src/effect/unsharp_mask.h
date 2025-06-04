@@ -20,9 +20,9 @@ public:
         m_threshold = std::clamp(threshold, 0, 255);
     }
 
-    static void HandlePixel(Image& img, int x, int y, RGBA32bit* px, UnsharpMask& effect)
+    static void HandlePixel(Image& img, int x, int y, RGBA32bit* px, UnsharpMask& eff)
     {
-        effect.Process(x, y, *px);
+        eff.Process(x, y, *px);
     }
 
 private:

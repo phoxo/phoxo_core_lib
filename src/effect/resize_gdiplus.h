@@ -26,10 +26,10 @@ private:
     {
         Image   old;
         img.Swap(old);
-        auto   src = CodecGdiplus::CreateBitmapReference(old);
+        auto   src = GdiplusHelper::CreateBitmapReference(old);
 
         img.Create(m_new_size, old.ColorBits(), old.GetAttribute());
-        auto   dest = CodecGdiplus::CreateBitmapReference(img);
+        auto   dest = GdiplusHelper::CreateBitmapReference(img);
         if (src && dest)
         {
             Gdiplus::Graphics   gc(dest.get());
