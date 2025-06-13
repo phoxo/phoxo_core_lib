@@ -42,7 +42,7 @@ private:
                 {
                     cr.a = (BYTE)(cr.a * m_percent / 100);
                 }
-                Color::CompositeStraightAlpha(*dest, cr);
+                PixelFunc::CompositeStraightAlpha(*dest, cr);
             }
         }
     }

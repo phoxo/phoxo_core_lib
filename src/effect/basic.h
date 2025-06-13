@@ -71,7 +71,7 @@ private:
 public:
     static void HandlePixel(Image&, int, int, RGBA32bit* px, ImageEffect&)
     {
-        Color::Premultiply(*px);
+        PixelFunc::Premultiply(*px);
     }
 };
 
@@ -92,7 +92,7 @@ private:
 public:
     static void HandlePixel(Image&, int, int, RGBA32bit* px, ImageEffect&)
     {
-        Color::UnPremultiply(*px);
+        PixelFunc::UnPremultiply(*px);
     }
 };
 
@@ -112,7 +112,7 @@ public:
         memcpy(px, &eff.m_cr, 3);
         if (eff.m_apply_premultiply)
         {
-            Color::Premultiply(*px);
+            PixelFunc::Premultiply(*px);
         }
     }
 

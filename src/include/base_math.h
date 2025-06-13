@@ -27,12 +27,6 @@ public:
     {
         return std::fabs(a - b) < std::numeric_limits<T>::epsilon();
     }
-
-    template<class T>
-    static int TruncCoord(const T& v)
-    {
-        return (v < 0) ? (int)floor(v) : (int)v;
-    }
 };
 
 _PHOXO_NAMESPACE_END

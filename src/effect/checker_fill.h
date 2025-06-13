@@ -23,7 +23,7 @@ private:
     {
         int   nX = x / m_size, nY = y / m_size;
         RGBA32bit   c = ((nX + nY) % 2 == 0) ? m_cr1 : m_cr2;
-        Color::CompositeStraightAlpha(px, c);
+        PixelFunc::CompositeStraightAlpha(px, c);
     }
 
 public:

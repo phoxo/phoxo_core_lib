@@ -27,7 +27,7 @@ public:
 
                 if (img.IsInside(x, y))
                 {
-                    box.Accumulate(*(RGBA32bit*)img.GetPixel(x, y), w * h);
+                    box.Accumulate(*(const RGBA32bit*)img.GetPixel(x, y), w * h);
                 }
             }
         }
