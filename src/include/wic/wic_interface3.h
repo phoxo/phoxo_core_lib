@@ -65,18 +65,6 @@ namespace WIC
         return t;
     }
 
-    inline int GetBitsPerPixel(WICPixelFormatGUID fmt)
-    {
-        // 目前只用到了 WICNormal32bpp / WICPremultiplied32bpp
-        if ((fmt == WICNormal32bpp) ||
-            (fmt == WICPremultiplied32bpp) ||
-            (fmt == GUID_WICPixelFormat32bppBGR))
-            return 32;
-        if (fmt == GUID_WICPixelFormat24bppBGR)  return 24;
-        assert(false);
-        return 0;
-    }
-
     inline IStreamPtr CreateStreamFromFileNoLock(PCWSTR filepath)
     {
         IStreamPtr   t;

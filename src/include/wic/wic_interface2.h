@@ -5,8 +5,8 @@ class CComPROPVARIANT : public PROPVARIANT
 {
 public:
     CComPROPVARIANT() { PropVariantInit(this); }
-    CComPROPVARIANT(USHORT v) { InitPropVariantFromUInt16(v, this); }
-    CComPROPVARIANT(PCWSTR v) { InitPropVariantFromString(v, this); }
+    explicit CComPROPVARIANT(USHORT v) { InitPropVariantFromUInt16(v, this); }
+    explicit CComPROPVARIANT(PCWSTR v) { InitPropVariantFromString(v, this); }
     ~CComPROPVARIANT() { PropVariantClear(this); }
 
     operator LPPROPVARIANT() { return this; }

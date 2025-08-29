@@ -117,7 +117,7 @@ public:
     static Image Make(IWICBitmapSource* src_bmp, WICPixelFormatGUID output_format)
     {
         int   attr = (output_format == WICPremultiplied32bpp) ? Image::PremultipliedAlpha : 0;
-        int   bpp = WIC::GetBitsPerPixel(output_format);
+        int   bpp = GetBitsPerPixel(output_format);
         auto    src = WIC::ConvertFormat(src_bmp, output_format);
         CSize   sz = WIC::GetBitmapSize(src);
 
@@ -133,6 +133,19 @@ public:
         return img;
     }
     //@}
+
+private:
+    static int GetBitsPerPixel(WICPixelFormatGUID fmt)
+    {
+        // 目前只用到了 WICNormal32bpp / WICPremultiplied32bpp
+        if ((fmt == WICNormal32bpp) ||
+            (fmt == WICPremultiplied32bpp) ||
+            (fmt == GUID_WICPixelFormat32bppBGR))
+            return 32;
+        if (fmt == GUID_WICPixelFormat24bppBGR)  return 24;
+        assert(false);
+        return 0;
+    }
 };
 
 _PHOXO_NAMESPACE_END

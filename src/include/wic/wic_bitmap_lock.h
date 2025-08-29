@@ -13,7 +13,6 @@ namespace WIC
         UINT   m_stride = 0;
         UINT   m_buf_size = 0;
         BYTE   * m_data = nullptr;
-        WICPixelFormatGUID   m_format = {};
 
     public:
         BitmapLock(IWICBitmapPtr src)
@@ -25,7 +24,6 @@ namespace WIC
                 src->Lock(&rc, WICBitmapLockRead | WICBitmapLockWrite, &m_lock);
                 m_lock->GetStride(&m_stride);
                 m_lock->GetDataPointer(&m_buf_size, &m_data);
-                src->GetPixelFormat(&m_format);
             }
             catch (_com_error&) {}
             assert(m_data);
