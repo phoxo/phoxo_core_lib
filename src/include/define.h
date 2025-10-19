@@ -20,7 +20,6 @@
 #include <GdiPlus.h>
 #pragma comment (lib, "GdiPlus.lib")
 using GPointF = Gdiplus::PointF;
-using GRectF = Gdiplus::RectF;
 /// @endcond
 
 //-------------------------------------------------------------------------------------

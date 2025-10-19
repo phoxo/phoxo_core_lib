@@ -68,7 +68,7 @@ public:
 
 public:
     static constexpr PCWSTR   ExtJpeg = L",jpg,jpeg,jfif,jpe,";
-    static constexpr PCWSTR   ExtRaw = L",3fr,ari,arw,bay,cap,cr2,cr3,crw,dcs,dcr,drf,eip,erf,fff,iiq,k25,kdc,mef,mos,mrw,nef,nrw,orf,ori,pef,ptx,pxn,raf,raw,rw2,rwl,sr2,srf,srw,x3f,dng,";
+    static constexpr PCWSTR   ExtRaw = L",arw,cr2,cr3,nef,orf,raf,rw2,dng,";
 };
 
 _PHOXO_NAMESPACE_END

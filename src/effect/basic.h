@@ -123,7 +123,7 @@ public:
 };
 
 /// Adjusts alpha channel by percentage (32 bit).  (Never tested it)
-class AlphaPercent : public PixelIterator<AlphaPercent>
+/*class AlphaPercent : public PixelIterator<AlphaPercent>
 {
 private:
     int   m_percent;
@@ -141,7 +141,7 @@ public:
     {
         px->a = (px->a * eff.m_percent + 50) / 100;
     }
-};
+};*/
 
 _PHOXO_NAMESPACE_END
 _PHOXO_NAMESPACE_END
