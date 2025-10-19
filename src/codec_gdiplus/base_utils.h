@@ -1,14 +1,19 @@
 #pragma once
+#include "base_path_render.h"
 
 _PHOXO_BEGIN
 
 /// Helper
-class GdiplusHelper
+class GdiplusUtils
 {
 public:
     static std::unique_ptr<Gdiplus::Bitmap> CreateBitmapReference(const Image& img)
     {
-        if (!img) { assert(false); return nullptr; }
+        if (!img)
+        {
+            assert(false); return nullptr;
+        }
+
         return std::make_unique<Gdiplus::Bitmap>(img.Width(), img.Height(), img.Stride(), GetPixelFormat(img), img.GetMemStart());
     }
 

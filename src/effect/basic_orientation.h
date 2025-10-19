@@ -7,7 +7,7 @@ _PHOXO_EFFECT_BEGIN
 class Mirror : public PixelIterator<Mirror>
 {
 public:
-    static void HandlePixel(Image& img, int x, int y, RGBA32bit* px, ImageEffect&)
+    static void HandlePixel(Image& img, int x, int y, RGBA32bit* px, Mirror&)
     {
         if (x < img.Width() / 2)
         {
@@ -21,7 +21,7 @@ public:
 class Flip : public PixelIterator<Flip>
 {
 public:
-    static void HandlePixel(Image& img, int x, int y, RGBA32bit* px, ImageEffect&)
+    static void HandlePixel(Image& img, int x, int y, RGBA32bit* px, Flip&)
     {
         if (y < img.Height() / 2)
         {
@@ -40,7 +40,7 @@ protected:
     void RInit(Image& img)
     {
         img.Swap(m_bak);
-        img.Create(m_bak.Height(), m_bak.Width(), m_bak.ColorBits(), m_bak.GetAttribute());
+        img.Create(m_bak.Height(), m_bak.Width(), m_bak.ColorBits(), m_bak.Attribute());
     }
 
     RGBA32bit RMap(int x, int y) const

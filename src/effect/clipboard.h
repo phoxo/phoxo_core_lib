@@ -10,7 +10,7 @@ _PHOXO_EFFECT_BEGIN
 class CopyToClipboard : public ImageEffect
 {
 private:
-    CString   m_filepath;
+    const CString   m_filepath;
 
 public:
     CopyToClipboard(PCWSTR filepath = L"") : m_filepath(filepath) {}

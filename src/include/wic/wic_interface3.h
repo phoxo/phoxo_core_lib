@@ -3,7 +3,8 @@
 namespace WIC
 {
     // 超过此尺寸，WIC 会返回有符号整数溢出错误
-    inline constexpr int MAX_BITMAP_PIXELS = 0x7FFFFFFF / 4 - 100; // 100 is not necessary
+    inline constexpr int  MAX_BITMAP_PIXELS = 0x7FFFFFFF / 4 - 100; // 100 is not necessary
+    inline constexpr GUID  GUID_ContainerFormat_Jxl = { 0xfec14e3f, 0x427a, 0x4736, { 0xaa, 0xe6, 0x27, 0xed, 0x84, 0xf6, 0x93, 0x22 } };
 
     inline GUID GetContainerFormat(IWICBitmapDecoder* decoder)
     {
@@ -31,13 +32,6 @@ namespace WIC
         UINT   x = 0, y = 0;
         if (src) { src->GetSize(&x, &y); }
         return CSize(x, y);
-    }
-
-    inline int GetResolution(IWICBitmapSource* src)
-    {
-        double   x = 0, y = 0;
-        if (src) { src->GetResolution(&x, &y); }
-        return (int)(x + 0.5);
     }
 
     inline WICPixelFormatGUID GetPixelFormat(IWICBitmapSource* bmp)

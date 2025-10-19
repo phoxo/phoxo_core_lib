@@ -24,7 +24,7 @@ public:
     void Read(IWICBitmapFrameDecode* frame_decode)
     {
         if (!frame_decode) { return; }
-        m_dpi = WIC::GetResolution(frame_decode);
+        m_dpi = GetResolution(frame_decode);
         EnumAllMetadata(frame_decode);
     }
 
@@ -141,5 +141,12 @@ private:
                 out_data = latitude + L"," + longitude;
             }
         }
+    }
+
+    static int GetResolution(IWICBitmapSource* src)
+    {
+        double   x = 0, y = 0;
+        if (src) { src->GetResolution(&x, &y); }
+        return (int)(x + 0.5);
     }
 };

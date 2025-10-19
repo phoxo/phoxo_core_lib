@@ -2,14 +2,15 @@
 
 _PHOXO_BEGIN
 _PHOXO_INTERNAL_BEGIN
+
 /// @cond
-struct GdiplusSaveParam
+struct GdiplusSaveParams
 {
     CLSID   m_type_CLSID;
     ULONG   m_jpeg_quality;
     std::unique_ptr<Gdiplus::EncoderParameters>   m_encoder_param;
 
-    GdiplusSaveParam(PCWSTR filepath, int jpeg_quality)
+    GdiplusSaveParams(PCWSTR filepath, int jpeg_quality)
     {
         auto   image_type = ImageFileExtParser::GetType(filepath);
         m_type_CLSID = GetEncoderClsid(image_type);
@@ -27,13 +28,14 @@ private:
     static GUID GetFormatGUID(ImageFormat fmt)
     {
         using enum ImageFormat;
+        using namespace Gdiplus;
         switch (fmt)
         {
-            case Bmp: return Gdiplus::ImageFormatBMP;
-            case Jpeg: return Gdiplus::ImageFormatJPEG;
-            case Gif: return Gdiplus::ImageFormatGIF;
-            case Tiff: return Gdiplus::ImageFormatTIFF;
-            case Png: return Gdiplus::ImageFormatPNG;
+            case Bmp: return ImageFormatBMP;
+            case Jpeg: return ImageFormatJPEG;
+            case Gif: return ImageFormatGIF;
+            case Tiff: return ImageFormatTIFF;
+            case Png: return ImageFormatPNG;
         }
         return GUID_NULL;
     }
@@ -44,8 +46,8 @@ private:
         Gdiplus::GetImageEncodersSize(&num, &buf_size);
         if (num && buf_size)
         {
-            std::vector<BYTE>   temp_buf(buf_size);
-            auto   info = (Gdiplus::ImageCodecInfo*)temp_buf.data();
+            std::vector<BYTE>   tempbuf(buf_size);
+            auto   info = (Gdiplus::ImageCodecInfo*)tempbuf.data();
             Gdiplus::GetImageEncoders(num, buf_size, info);
 
             GUID   fmtid = GetFormatGUID(img_type);
@@ -61,5 +63,6 @@ private:
     }
 };
 /// @endcond
+
 _PHOXO_NAMESPACE_END
 _PHOXO_NAMESPACE_END

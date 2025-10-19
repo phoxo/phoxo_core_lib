@@ -13,13 +13,13 @@
 #include <vector>
 #include <deque>
 #include <algorithm>
+#include <execution>
 
 #ifndef GDIPVER
     #define GDIPVER 0x0110
 #endif
 #include <GdiPlus.h>
 #pragma comment (lib, "GdiPlus.lib")
-using GPointF = Gdiplus::PointF;
 /// @endcond
 
 //-------------------------------------------------------------------------------------
@@ -30,6 +30,8 @@ using GPointF = Gdiplus::PointF;
 #define _PHOXO_NAMESPACE_END   }
 
 _PHOXO_BEGIN
+using GPointF = Gdiplus::PointF;
+
 /// The alias for RGBQUAD, rgbReserved is too ugly.
 union RGBA32bit
 {
@@ -64,8 +66,8 @@ _PHOXO_NAMESPACE_END
 #include "wic/wic_orientation_tag.h"
 #include "wic/wic_metadata_iterator.h"
 #include "wic/wic_metadata.h"
-#include "wic/wic_factory.h" // 这两个文件依赖全局 g_factory
-#include "wic/wic_system_codec.h"
+#include "wic/wic_factory.h" // 此文件依赖全局 g_factory
+#include "wic/wic_system_codec.h" // 此文件依赖全局 g_factory
 
 #include "base_utils.h"
 #include "base_bitmap_hdc.h"

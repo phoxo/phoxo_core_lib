@@ -19,12 +19,16 @@
 
 // image operation helpers
 #include "imageops/image_handle.h"
+#include "imageops/image_drawer.h"
+#include "imageops/image_fast_pixel.h"
 #include "imageops/sampling_bilinear.h"
 #include "imageops/sampling_area_box.h"
 
 // codec
 #include "codec_gdiplus/codec_gdiplus.h"
 #include "codec_wic/codec_wic.h"
+
+#include "d2d/render_target.h"
 
 // effect
 #include "effect/basic.h"
@@ -37,8 +41,7 @@
 #include "effect/clipboard.h"
 #include "effect/resize_gdiplus.h"
 #include "effect/resize_wic.h"
-
-#include "d2d/render_target.h"
+#include "effect/text_shadow.h"
 
 _PHOXO_BEGIN
 /// Init / Uninit
@@ -56,12 +59,18 @@ public:
         Gdiplus::GdiplusStartupInput   si;
         Gdiplus::GdiplusStartup(&m_token, &si, NULL); // init GDIPLUS
 
-        WIC::CreateWICFactory(); // init WIC
+        WIC::g_factory.CreateInstance(CLSID_WICImagingFactory); // init WIC
         WIC::GetSystemCodecFormat(L"");
+    }
+
+    static void InitD2D(ID2D1Factory* d2d)
+    {
+        D2D::g_factory = d2d;
     }
 
     static void Uninit()
     {
+        D2D::g_factory = nullptr;
         WIC::g_factory = nullptr;
         Gdiplus::GdiplusShutdown(m_token);
         if (SUCCEEDED(m_COM_result))

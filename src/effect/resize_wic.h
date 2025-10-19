@@ -7,7 +7,7 @@ _PHOXO_EFFECT_BEGIN
 class ResizeWic : public ImageEffect
 {
 private:
-    CSize   m_new_size;
+    const CSize   m_new_size;
 
 public:
     WICBitmapInterpolationMode   m_resize_mode = WICBitmapInterpolationModeHighQualityCubic;

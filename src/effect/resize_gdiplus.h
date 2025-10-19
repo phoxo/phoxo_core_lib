@@ -7,7 +7,7 @@ _PHOXO_EFFECT_BEGIN
 class ResizeGdiplus : public ImageEffect
 {
 private:
-    CSize   m_new_size;
+    const CSize   m_new_size;
 
 public:
     Gdiplus::InterpolationMode   m_resize_mode = Gdiplus::InterpolationModeHighQualityBicubic;
@@ -26,10 +26,10 @@ private:
     {
         Image   old;
         img.Swap(old);
-        auto   src = GdiplusHelper::CreateBitmapReference(old);
+        auto   src = GdiplusUtils::CreateBitmapReference(old);
 
-        img.Create(m_new_size, old.ColorBits(), old.GetAttribute());
-        auto   dest = GdiplusHelper::CreateBitmapReference(img);
+        img.Create(m_new_size, old.ColorBits(), old.Attribute());
+        auto   dest = GdiplusUtils::CreateBitmapReference(img);
         if (src && dest)
         {
             Gdiplus::Graphics   gc(dest.get());

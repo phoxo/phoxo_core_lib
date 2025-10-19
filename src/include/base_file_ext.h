@@ -45,10 +45,10 @@ public:
 
             if (wcsstr(ExtJpeg, ext))  return Jpeg;
             if (ext == L",png,")  return Png;
-            if (wcsstr(L",bmp,dib,", ext))  return Bmp;
+            if (ext == L",bmp,")  return Bmp;
             if (ext == L",gif,")  return Gif;
             if (wcsstr(L",tiff,tif,", ext))  return Tiff;
-            if (wcsstr(L",ico,icon,", ext))  return Icon;
+            if (ext == L",ico,")  return Icon;
             if (ext == L",psd,")  return Psd;
             if (ext == L",tga,")  return Tga;
             if (ext == L",webp,")  return Webp;
@@ -67,7 +67,7 @@ public:
     }
 
 public:
-    static constexpr PCWSTR   ExtJpeg = L",jpg,jpeg,jfif,jpe,";
+    static constexpr PCWSTR   ExtJpeg = L",jpg,jpeg,jpe,";
     static constexpr PCWSTR   ExtRaw = L",arw,cr2,cr3,nef,orf,raf,rw2,dng,";
 };
 

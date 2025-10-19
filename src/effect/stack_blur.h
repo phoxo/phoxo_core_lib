@@ -8,11 +8,11 @@
 _PHOXO_BEGIN
 _PHOXO_EFFECT_BEGIN
 
+// The branch introduced by 'bool m_only_blur_alpha' will significantly slow down performance
 struct BlurParams
 {
     int   r;
     bool   m_copy_edge;
-    bool   m_only_blur_alpha;
 };
 
 /// @cond
@@ -227,7 +227,7 @@ private:
     const internal::KernelInfo   m_kernel;
 
 public:
-    StackBlur(int radius) : StackBlur(BlurParams{radius, true, false}) {}
+    StackBlur(int radius) : StackBlur(BlurParams{radius, true}) {}
     StackBlur(const BlurParams& param) : m_kernel(param) {}
 
 private:

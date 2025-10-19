@@ -5,11 +5,6 @@ namespace WIC
 {
     inline IWICImagingFactoryPtr   g_factory;
 
-    inline void CreateWICFactory()
-    {
-        g_factory.CreateInstance(CLSID_WICImagingFactory, NULL, CLSCTX_INPROC_SERVER);
-    }
-
     inline IWICColorContextPtr CreateColorContext()
     {
         IWICColorContextPtr   t;
@@ -70,13 +65,6 @@ namespace WIC
         return CreateBitmapFromSource(src);
     }
 
-    inline IWICBitmapPtr CreateBitmapFromHICON(HICON ico)
-    {
-        IWICBitmapPtr   t;
-        if (ico) { g_factory->CreateBitmapFromHICON(ico, &t); }
-        return t;
-    }
-
     inline IWICBitmapPtr CreateBitmapFromHBITMAP(HBITMAP src, WICBitmapAlphaChannelOption options)
     {
         IWICBitmapPtr   t;
@@ -104,20 +92,6 @@ namespace WIC
         return src;
     }
 
-    inline IWICColorTransformPtr CreateColorTransformer()
-    {
-        IWICColorTransformPtr   t;
-        g_factory->CreateColorTransformer(&t);
-        return t;
-    }
-
-    inline IWICBitmapDecoderPtr CreateDecoderFromFilename(PCWSTR filepath, DWORD desired_access)
-    {
-        IWICBitmapDecoderPtr   t;
-        g_factory->CreateDecoderFromFilename(filepath, NULL, desired_access, WICDecodeMetadataCacheOnDemand, &t);
-        return t;
-    }
-
     inline IWICBitmapDecoderPtr CreateDecoderFromStream(IStream* stm)
     {
         IWICBitmapDecoderPtr   t;
@@ -130,17 +104,6 @@ namespace WIC
         auto   t = CreateStreamFromFileNoLock(filepath);
         return CreateDecoderFromStream(t);
     }
-
-    // NO embedded ICC and JPEG orientation applied
-    inline IWICBitmapPtr LoadPlainImageFromStream(IStream* stm, REFWICPixelFormatGUID output_format)
-    {
-        auto   decoder = CreateDecoderFromStream(stm);
-        auto   frame = GetFrame(decoder, 0); // first frame
-        auto   dest = ConvertFormat(frame, output_format); assert(dest);
-        return CreateBitmapFromSource(dest);
-    }
-
-    static constexpr GUID   GUID_ContainerFormat_Jxl = { 0xfec14e3f, 0x427a, 0x4736, { 0xaa, 0xe6, 0x27, 0xed, 0x84, 0xf6, 0x93, 0x22 } };
 
     inline bool IsDecoderMissing(REFGUID container)
     {

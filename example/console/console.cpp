@@ -8,6 +8,7 @@
 namespace eff = phoxo::effect;
 using phoxo::CodecWIC;
 using phoxo::CodecGdiplus;
+using phoxo::GdiplusHelper;
 using FImage = phoxo::Image;
 
 using namespace Gdiplus;
@@ -45,7 +46,7 @@ void ApplyRotate90(const auto& img)
 void DrawOnImage(const auto& img)
 {
     FImage   tmp = img;
-    auto   gpbmp = CodecGdiplus::CreateBitmapReference(tmp);
+    auto   gpbmp = GdiplusHelper::CreateBitmapReference(tmp);
     Graphics   gc(gpbmp.get());
     gc.SetSmoothingMode(SmoothingModeAntiAlias);
 

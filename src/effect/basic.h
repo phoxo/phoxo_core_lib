@@ -8,16 +8,6 @@
 _PHOXO_BEGIN
 _PHOXO_EFFECT_BEGIN
 
-/// Gray scale (32 bit).
-class Grayscale : public PixelIterator<Grayscale>
-{
-public:
-    static void HandlePixel(Image&, int, int, RGBA32bit* px, ImageEffect&)
-    {
-        px->r = px->g = px->b = Color::GetGrayscale(px);
-    }
-};
-
 /// Brightness and contrast (32 bit).
 class BrightnessContrast : public ColorLUT
 {
@@ -53,95 +43,6 @@ class InvertColor : public ColorLUT
         return (BYTE)(255 - idx);
     }
 };
-
-/// Pre-multiply image (32 bit).
-class Premultiply : public PixelIterator<Premultiply>
-{
-private:
-    bool IsSupported(const Image& img) override
-    {
-        return (img.ColorBits() == 32) && !img.IsPremultiplied();
-    }
-
-    void OnAfterProcess(Image& img) override
-    {
-        img.SetPremultiplied(true);
-    }
-
-public:
-    static void HandlePixel(Image&, int, int, RGBA32bit* px, ImageEffect&)
-    {
-        PixelFunc::Premultiply(*px);
-    }
-};
-
-/// Un-Premultiply image (32 bit).
-class UnPremultiply : public PixelIterator<UnPremultiply>
-{
-private:
-    bool IsSupported(const Image& img) override
-    {
-        return (img.ColorBits() == 32) && img.IsPremultiplied();
-    }
-
-    void OnAfterProcess(Image& img) override
-    {
-        img.SetPremultiplied(false);
-    }
-
-public:
-    static void HandlePixel(Image&, int, int, RGBA32bit* px, ImageEffect&)
-    {
-        PixelFunc::UnPremultiply(*px);
-    }
-};
-
-/// Overlay color (32 bit).
-class ColorOverlay : public PixelIterator<ColorOverlay>
-{
-private:
-    Color   m_cr;
-    bool   m_apply_premultiply;
-
-public:
-    // the alpha value of the cr will be ignored.
-    ColorOverlay(Color cr, bool apply_premultiply = true) : m_cr(cr), m_apply_premultiply(apply_premultiply) {}
-
-    static void HandlePixel(Image&, int, int, RGBA32bit* px, ColorOverlay& eff)
-    {
-        memcpy(px, &eff.m_cr, 3);
-        if (eff.m_apply_premultiply)
-        {
-            PixelFunc::Premultiply(*px);
-        }
-    }
-
-    void OnAfterProcess(Image& img) override
-    {
-        img.SetPremultiplied(m_apply_premultiply);
-    }
-};
-
-/// Adjusts alpha channel by percentage (32 bit).  (Never tested it)
-/*class AlphaPercent : public PixelIterator<AlphaPercent>
-{
-private:
-    int   m_percent;
-
-    bool IsSupported(const Image& img) override
-    {
-        return (img.ColorBits() == 32) && !img.IsPremultiplied();
-    }
-
-public:
-    /// 0 <= percent <= 100
-    AlphaPercent(int percent) : m_percent(percent) {}
-
-    static void HandlePixel(Image&, int, int, RGBA32bit* px, AlphaPercent& eff)
-    {
-        px->a = (px->a * eff.m_percent + 50) / 100;
-    }
-};*/
 
 _PHOXO_NAMESPACE_END
 _PHOXO_NAMESPACE_END

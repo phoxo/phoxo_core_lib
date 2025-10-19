@@ -58,7 +58,7 @@ public:
 
         // 不要改变icc像素格式，有一次解码.cr2格式遇到超长时间
         auto   format = WIC::GetPixelFormat(src_bmp);
-        if (auto trans = WIC::CreateColorTransformer())
+        if (auto trans = CreateColorTransformer())
         {
             if (trans->Initialize(src_bmp, src_icc, dest_icc, format) == S_OK)
                 return trans;
@@ -77,6 +77,13 @@ private:
         }
         assert(false);
         return src;
+    }
+
+    static IWICColorTransformPtr CreateColorTransformer()
+    {
+        IWICColorTransformPtr   t;
+        WIC::g_factory->CreateColorTransformer(&t);
+        return t;
     }
 };
 

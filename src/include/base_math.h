@@ -22,10 +22,21 @@ public:
         return 4 * ((width * bpp + 31) / 32);
     }
 
-    template<class T>
+    template<typename T>
     static bool AlmostEqual(const T& a, const T& b)
     {
         return std::fabs(a - b) < std::numeric_limits<T>::epsilon();
+    }
+
+    static CString NewGUIDString()
+    {
+        GUID   g{};
+        CoCreateGuid(&g);
+        CString   s;
+        StringFromGUID2(g, s.GetBuffer(64), 64);
+        s.ReleaseBuffer();
+        s.Remove(L'{'); s.Remove(L'}'); s.Remove(L'-');
+        return s;
     }
 };
 

@@ -68,10 +68,10 @@ public:
     /// @name Create / Destroy.
     ///@{
     /***/
-    bool Create(const SIZE& image_size, int bpp, int attribute = 0) { return Create(image_size.cx, image_size.cy, bpp, attribute); }
+    bool Create(const SIZE& image_size, int bpp = 32, int attribute = 0) { return Create(image_size.cx, image_size.cy, bpp, attribute); }
 
     /// create a new image, bpp can be <span style='color:#FF0000'>8 , 24 , 32</span>.
-    bool Create(int width, int height, int bpp, int attribute = 0)
+    bool Create(int width, int height, int bpp = 32, int attribute = 0)
     {
         Destroy();
         if (!width || !height || !bpp)
@@ -119,6 +119,12 @@ public:
         InitMember();
         return bmp;
     }
+
+    /// set the entire image buffer to zero (transparent / black).
+    void ZeroPixels()
+    {
+        if (m_pixel) { memset(m_pixel, 0, GetPixelBufferSize()); }
+    }
     ///@}
 
     /// @name Attributes.
@@ -146,17 +152,17 @@ public:
     }
     BYTE* GetPixel(const POINT& pt) const { return GetPixel(pt.x, pt.y); }
 
-    SIZE GetSize() const { return CSize(m_width, m_height); }
+    SIZE Size() const { return CSize(m_width, m_height); }
     int Width() const { return m_width; }
     int Height() const { return m_height; }
     int ColorBits() const { return m_bpp; }
     int Stride() const { return m_stride; }
     int PixelCount() const { return m_width * m_height; }
     /// equal stride * height
-    int GetPixelBufferSize() const { return (m_stride * Height()); }
+    int GetPixelBufferSize() const { return m_stride * m_height; }
     /// get the starting address of the pixel.
     BYTE* GetMemStart() const { return m_pixel; }
-    int GetAttribute() const { return m_attribute; }
+    int Attribute() const { return m_attribute; }
     operator HBITMAP() const { return m_DIB_Handle; }
     operator bool() const { return (m_pixel != 0); }
     bool IsPremultiplied() const { return (m_attribute & PremultipliedAlpha); }
@@ -222,7 +228,7 @@ public:
         delete effect;
     }
 
-    template<class T>
+    template<typename T>
     void IterateRangePixels(const RECT& rc, T& effect)
     {
         int   bpp = ColorBits() / 8;

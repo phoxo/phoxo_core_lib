@@ -41,7 +41,7 @@ public:
 
     operator Gdiplus::Color() const
     {
-        return Gdiplus::Color(rgbRed, rgbGreen, rgbBlue);
+        return Gdiplus::Color(rgbReserved, rgbRed, rgbGreen, rgbBlue);
     }
 
     bool IsColorLight() const

@@ -7,13 +7,13 @@ _PHOXO_EFFECT_BEGIN
 class HueSaturation : public PixelIterator<HueSaturation>
 {
 private:
-    double   m_saturation;
+    const double   m_saturation;
 
 public:
     /// -100 <= saturation <= 100, 0 means not change
     HueSaturation(int hue, int saturation)
+        : m_saturation(saturation * 0.01)
     {
-        m_saturation = saturation * 0.01;
     }
 
     void Process(RGBA32bit* px) const
