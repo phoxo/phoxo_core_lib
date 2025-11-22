@@ -73,7 +73,8 @@ private:
             RGBA32bit   ret{};
             if (total_weight > 0) // total_weight > 0 if accumulated, 0 if outside the layer
             {
-                if (ret.a = (BYTE)(sa / total_weight + 0.5)) // May be fully transparent
+                ret.a = (BYTE)(sa / total_weight + 0.5);
+                if (ret.a) // May be fully transparent
                 {
                     ret.b = (BYTE)(sb / sa + 0.5);
                     ret.g = (BYTE)(sg / sa + 0.5);

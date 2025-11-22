@@ -7,7 +7,7 @@ class GdiplusPathRender
 public:
     struct PenParams
     {
-        Gdiplus::Color   color;
+        Color   color;
         float   width;
     };
 
@@ -23,7 +23,7 @@ public:
         if (!steps)
             return;
 
-        clr.rgbReserved = 256 / steps; // alpha
+        clr.rgbReserved = (BYTE)(256 / steps); // alpha
         for (int i = 1; i < steps; i++)
         {
             Draw(g, { clr, (float)i });

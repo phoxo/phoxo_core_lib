@@ -11,7 +11,7 @@ private:
 //    std::pair<int, int>   m_range;
 
 public:
-    virtual ~IProgressListener() {}
+    virtual ~IProgressListener() = default;
 
     bool IsUserCanceled() const { return m_canceled; }
     void BeginFixProgress(int fix_progress) { m_fix_progress = fix_progress; }

@@ -14,8 +14,8 @@ public:
      */
     static RGBA32bit Get(const Image& img, const GPointF& pt)
     {
-        auto pixel = [&](int ix, int iy) -> RGBA32bit {
-            return img.IsInside(ix, iy) ? *(const RGBA32bit*)img.GetPixel(ix, iy) : Color::Zero; // 以后需要加clamp
+        auto pixel = [&img](int ix, int iy) -> RGBA32bit {
+            return img.IsInside(ix, iy) ? *(const RGBA32bit*)img.GetPixel(ix, iy) : RGBA32bit{}; // 以后需要加clamp
         };
 
         int   x = (int)floor(pt.X);

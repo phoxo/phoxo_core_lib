@@ -12,7 +12,7 @@ public:
     CWICFileEncoder(PCWSTR filepath, int jpeg_quality = 80)
     {
         m_image_format = WIC::GetSystemCodecFormat(filepath);
-        HRESULT   hr = WIC::g_factory->CreateEncoder(m_image_format, NULL, &m_encoder);
+        [[maybe_unused]] HRESULT   hr = WIC::g_factory->CreateEncoder(m_image_format, NULL, &m_encoder);
         if (!m_encoder)
         {
             assert(hr == WINCODEC_ERR_COMPONENTNOTFOUND); // 不支持的图像编码格式
@@ -37,7 +37,7 @@ public:
         return (m_frame_encode != NULL);
     }
 
-    bool IsJPEG() const { return (m_image_format == GUID_ContainerFormatJpeg); }
+    bool IsJPEG() const { return m_image_format == GUID_ContainerFormatJpeg; }
 
 /*    void CopyMetadata(IWICBitmapFrameDecodePtr source_meta)
     {

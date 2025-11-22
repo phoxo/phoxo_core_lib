@@ -5,14 +5,14 @@
 _PHOXO_BEGIN
 
 /**
-    @brief Image object.
+    @brief Image object
 
         The image coordinate system follows the convention where:
     - The origin (0, 0) is located at the <span style='color:#FF0000'>upper-left</span> corner.
     - The **x-axis** increases from left to right.
     - The **y-axis** increases from top to bottom.
 */
-class Image
+class Image final
 {
 public:
     enum
@@ -21,68 +21,65 @@ public:
     };
 
 private:
-    int   m_attribute = 0;
     int   m_width = 0;
     int   m_height = 0;
-    int   m_bpp = 0;
     int   m_stride = 0;
+    uint16_t   m_attribute = 0;
+    uint16_t   m_bpp = 0;
     BYTE   * m_pixel = nullptr;
     HBITMAP   m_DIB_Handle = nullptr;
 
 public:
-    /// @name Constructor.
-    ///@{
-    /***/
-    /// default constructor.
-    Image() {}
-    /// copy constructor.
-    Image(const Image& img) { *this = img; }
-    /// move constructor.
-    Image(Image&& img)
+    /// @name Construction
+    /// @{
+    Image() {} ///< default constructor
+
+    Image(const Image& img) { *this = img; } ///< copy constructor
+
+    Image(Image&& img) { Swap(img); } ///< move constructor
+
+    ~Image() { Destroy(); } ///< destructor (non-virtual)
+
+    /// copy assignment
+    Image& operator=(const Image& img)
     {
-        Swap(img);
-    }
-    /// destructor.
-    virtual ~Image() { Destroy(); }
-    /// copy assignment operator.
-    Image& operator= (const Image& img)
-    {
-        if (&img == this) { assert(false); return *this; }
-        if (!img) { Destroy(); return *this; }
-        if (Create(img.Width(), img.Height(), img.ColorBits(), img.m_attribute))
+        if (&img == this) { assert(false); return *this; } // check self-assignment
+        if (!img) { Destroy(); return *this; } // empty source
+
+        if (Create(img.Size(), img.m_bpp, img.m_attribute))
         {
-            memcpy(GetMemStart(), img.GetMemStart(), img.GetPixelBufferSize());
+            memcpy(m_pixel, img.m_pixel, img.GetPixelBufferSize());
         }
         return *this;
     }
-    /// move assignment operator.
+
+    /// move assignment
     Image& operator=(Image&& other)
     {
-        if (&other == this) { assert(false); return *this; }
+        if (&other == this) { assert(false); return *this; } // check self-assignment
         Destroy();
         Swap(other);
         return *this;
     }
-    ///@}
+    /// @}
 
-    /// @name Create / Destroy.
-    ///@{
-    /***/
+    /// @name Create / Destroy
+    /// @{
     bool Create(const SIZE& image_size, int bpp = 32, int attribute = 0) { return Create(image_size.cx, image_size.cy, bpp, attribute); }
 
-    /// create a new image, bpp can be <span style='color:#FF0000'>8 , 24 , 32</span>.
+    /// create a new image, bpp can be <span style='color:#FF0000'>8 , 24 , 32</span>
     bool Create(int width, int height, int bpp = 32, int attribute = 0)
     {
         Destroy();
-        if (!width || !height || !bpp)
+        if (width <= 0 || height == 0 || bpp <= 0)
         {
             assert(false); return false;
         }
 
-        m_attribute = attribute;
+        m_attribute = (uint16_t)attribute;
         m_width = width;
         m_height = abs(height);
-        m_bpp = bpp;
+        m_bpp = (uint16_t)bpp;
         m_stride = Math::CalcStride(width, bpp);
         AllocPixelBuffer();
         if (!m_pixel || (bpp == 1) || (bpp == 4) || (bpp == 16)) // unsupported format
@@ -93,14 +90,14 @@ public:
         return true;
     }
 
-    /// destroy image.
+    /// destroy the image
     void Destroy()
     {
         if (m_DIB_Handle) { DeleteObject(m_DIB_Handle); }
         InitMember();
     }
 
-    /// swap the current image's data with img.
+    /// swap data with another image
     void Swap(Image& img)
     {
         std::swap(img.m_attribute, m_attribute);
@@ -112,7 +109,7 @@ public:
         std::swap(img.m_DIB_Handle, m_DIB_Handle);
     }
 
-    /// releases ownership of the DIB handle.
+    /// release ownership of the DIB handle
     HBITMAP Detach()
     {
         auto   bmp = m_DIB_Handle;
@@ -120,21 +117,20 @@ public:
         return bmp;
     }
 
-    /// set the entire image buffer to zero (transparent / black).
+    /// clear all pixels to zero (transparent / black)
     void ZeroPixels()
     {
         if (m_pixel) { memset(m_pixel, 0, GetPixelBufferSize()); }
     }
-    ///@}
+    /// @}
 
-    /// @name Attributes.
-    ///@{
-    /***/
-    bool IsValid() const { return (m_pixel != 0); }
+    /// @name Attributes
+    /// @{
+    bool IsValid() const { return m_pixel != 0; }
     bool IsInside(int x, int y) const { return (x >= 0) && (x < m_width) && (y >= 0) && (y < m_height); }
     bool IsInside(const POINT& pt) const { return IsInside(pt.x, pt.y); }
 
-    /// this function doesn't perform boundary checks, so <span style='color:#FF0000'>Crash</span> if y exceed.
+    /// no boundary checks, so <span style='color:#FF0000'>Crash</span> if y exceed.
     inline BYTE* GetLinePtr(int y) const
     {
         assert(IsInside(0, y));
@@ -152,26 +148,28 @@ public:
     }
     BYTE* GetPixel(const POINT& pt) const { return GetPixel(pt.x, pt.y); }
 
-    SIZE Size() const { return CSize(m_width, m_height); }
+    SIZE Size() const { return { m_width, m_height }; }
     int Width() const { return m_width; }
     int Height() const { return m_height; }
     int ColorBits() const { return m_bpp; }
     int Stride() const { return m_stride; }
     int PixelCount() const { return m_width * m_height; }
-    /// equal stride * height
-    int GetPixelBufferSize() const { return m_stride * m_height; }
-    /// get the starting address of the pixel.
-    BYTE* GetMemStart() const { return m_pixel; }
+    int GetPixelBufferSize() const { return m_stride * m_height; } ///< buffer size in bytes
+    BYTE* GetMemStart() const { return m_pixel; } ///< pointer to pixel buffer
     int Attribute() const { return m_attribute; }
     operator HBITMAP() const { return m_DIB_Handle; }
-    operator bool() const { return (m_pixel != 0); }
+    operator bool() const { return m_pixel != 0; }
     bool IsPremultiplied() const { return (m_attribute & PremultipliedAlpha); }
     void SetPremultiplied(bool v) { v ? ModifyAttribute(0, PremultipliedAlpha) : ModifyAttribute(PremultipliedAlpha, 0); }
-    ///@}
+    void ModifyAttribute(int remove, int add)
+    {
+        m_attribute = (uint16_t)((m_attribute & ~remove) | add);
+    }
+    /// @}
 
-    /// @name Temporary object.
-    ///@{
-    /***/
+    /// @name Temporary object
+    /// @{
+
     /// you can apply some effect (e.g. effect::BrightnessContrast) on buffer
     void Attach32bppBuffer(int width, int height, void* pixel)
     {
@@ -186,11 +184,11 @@ public:
         }
         else { assert(false); }
     }
-    ///@}
+    /// @}
 
-    /// @name Image Processing.
-    ///@{
-    /***/
+    /// @name Image Processing
+    /// @{
+
     /// apply an effect to the current image, more detail refer to ImageEffect.
     void ApplyEffect(ImageEffect& effect, IProgressListener* progress = nullptr)
     {
@@ -222,30 +220,22 @@ public:
             progress->UpdateProgress(100);
     }
 
-    void ApplyEffectAndDelete(ImageEffect* effect, IProgressListener* progress = nullptr)
-    {
-        ApplyEffect(*effect, progress);
-        delete effect;
-    }
-
     template<typename T>
     void IterateRangePixels(const RECT& rc, T& effect)
     {
         int   bpp = ColorBits() / 8;
         for (int y = rc.top; y < rc.bottom; y++)
         {
-            PBYTE   cur = GetPixel(rc.left, y);
+            BYTE *   cur = GetPixel(rc.left, y);
             for (int x = rc.left; x < rc.right; x++, cur += bpp)
             {
                 T::HandlePixel(*this, x, y, (RGBA32bit*)cur, effect);
             }
         }
     }
-    ///@}
+    /// @}
 
 private:
-    void ModifyAttribute(int remove, int add) { m_attribute = ((m_attribute & ~remove) | add); }
-
     void InitMember()
     {
         m_attribute = 0; m_width = 0; m_height = 0; m_bpp = 0; m_stride = 0;
@@ -263,7 +253,7 @@ private:
         std::vector<BYTE>   buf(info_byte);
         auto   info = (BITMAPINFO*)buf.data();
 
-        info->bmiHeader = { sizeof(BITMAPINFOHEADER), m_width, -m_height, 1, (WORD)m_bpp }; // the height is negative, from top to bottom
+        info->bmiHeader = { sizeof(BITMAPINFOHEADER), m_width, -m_height, 1, m_bpp }; // the height is negative, from top to bottom
         m_DIB_Handle = CreateDIBSection(NULL, info, DIB_RGB_COLORS, (VOID**)&m_pixel, NULL, 0);
     }
 

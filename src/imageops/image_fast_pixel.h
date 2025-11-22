@@ -2,35 +2,37 @@
 
 _PHOXO_BEGIN
 
-/// Fast per-pixel utilities for 32-bit images.
+/// Fast per-pixel utilities for 32-bit images
 class ImageFastPixel
 {
 public:
-    /// Returns true if all pixels have alpha == 0xFF.
+    /// Returns true if all pixels have alpha == 0xFF
     static bool IsFullyOpaque(const Image& img)
     {
         PixelSpan   s(img);
         if (!s)
             return false;
 
+        auto   func = [](const auto& px) { return px.a == 0xFF; };
+
         if (s.IsParallel())
-            return std::all_of(std::execution::par, s.begin, s.end, [](auto& px) { return px.a == 0xFF; });
+            return std::all_of(std::execution::par, s.begin, s.end, func);
         else
-            return std::all_of(s.begin, s.end, [](auto& px) { return px.a == 0xFF; });
+            return std::all_of(s.begin, s.end, func);
     }
 
-    /// Sets RGB of all pixels to the specified color, keeping alpha unchanged.
+    /// Sets RGB of all pixels to the specified color, keeping alpha unchanged
     static void SetRGBKeepAlpha(Image& img, RGBA32bit clr)
     {
         PixelSpan   s(img);
         if (!s)
             return;
 
-        s.ForEachPixel([&](auto& px) { PixelFunc::CopyRGB(&px, &clr); });
+        s.ForEachPixel([clr](auto& px) { PixelFunc::CopyRGB(&px, &clr); });
         img.SetPremultiplied(false);
     }
 
-    /// Pre-multiplies RGB by alpha.
+    /// Pre-multiplies RGB by alpha
     static void Premultiply(Image& img)
     {
         PixelSpan   s(img);

@@ -8,9 +8,9 @@ class Utils
 public:
     static CSize GetBitmapSize(HBITMAP bmp)
     {
-        BITMAP   bm = {};
+        BITMAP   bm{};
         ::GetObject(bmp, sizeof(bm), &bm);
-        return CSize(bm.bmWidth, bm.bmHeight);
+        return { bm.bmWidth, bm.bmHeight };
     }
 
     /// typical : mod = (HMODULE)&__ImageBase

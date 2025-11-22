@@ -44,6 +44,7 @@ public:
         CSize   sz = MeasureText() + CSize(margin * 2, margin * 2);
         Image   img;
         img.Create(sz);
+        img.ZeroPixels();
         if (auto refbmp = phoxo::GdiplusUtils::CreateBitmapReference(img))
         {
             auto   g = CreateGraphics(*refbmp);

@@ -13,7 +13,9 @@ private:
 
 public:
     /// radius >= 1 \n -100 <= brightness <= 100 \n -100 <= contrast <= 100.
-    SoftGlow(int radius, int brightness, int contrast) : m_gauss_blur(radius), m_bc(brightness, contrast)
+    SoftGlow(int radius, int brightness, int contrast)
+        : m_gauss_blur(radius)
+        , m_bc(brightness, contrast)
     {
     }
 
@@ -34,7 +36,7 @@ private:
         img.ApplyEffect(m_bc);
     }
 
-    void ProcessChannel(BYTE& dst, const BYTE& origin) const
+    static void ProcessChannel(BYTE& dst, const BYTE& origin)
     {
         dst = Math::Clamp0255(255 - (255 - origin) * (255 - dst) / 255);
     }

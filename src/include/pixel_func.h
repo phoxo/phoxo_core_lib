@@ -32,7 +32,7 @@ public:
         if (px.a == 255) return;
         if (px.a == 0) { px = {}; return; }
 
-        px.r = (BYTE)((px.r * px.a + 127) / 255);
+        px.r = (BYTE)((px.r * px.a + 127) / 255); // Guaranteed in [0, 255]
         px.g = (BYTE)((px.g * px.a + 127) / 255);
         px.b = (BYTE)((px.b * px.a + 127) / 255);
     }

@@ -12,7 +12,12 @@ private:
     PTP_WORK   m_work = NULL;
 
 public:
-    ParallelTask(const CRect& task_region, ImageEffect& effect, Image& img) : m_task_region(task_region), m_effect(effect), m_img(img) {}
+    ParallelTask(const CRect& task_region, ImageEffect& effect, Image& img)
+        : m_task_region(task_region)
+        , m_effect(effect)
+        , m_img(img)
+    {
+    }
 
     ~ParallelTask() // not virtual
     {
@@ -103,6 +108,7 @@ private:
 
             if ((rc.bottom == img.Height()) && (rc.right == img.Width()))
                 break; // <--- the last task
+
             rc.OffsetRect(region);
         }
     }

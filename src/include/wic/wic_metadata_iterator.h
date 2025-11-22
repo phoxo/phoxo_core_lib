@@ -40,8 +40,7 @@ namespace WIC
 
             for (UINT i = 0; i < item_count; i++)
             {
-                CComPROPVARIANT   id;
-                CComPROPVARIANT   val;
+                CComPROPVARIANT   id, val;
                 reader->GetValueByIndex(i, NULL, &id, &val);
                 OnEnumMetadataItem(meta_format, id, val);
 

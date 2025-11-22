@@ -37,9 +37,13 @@ union RGBA32bit
 {
     RGBQUAD   quad;
     struct { BYTE b, g, r, a; };
+    int32_t   val;
 
     operator RGBQUAD() const { return quad; }
     void operator=(const RGBQUAD& c) { quad = c; }
+
+    bool operator==(const RGBA32bit& c) const { return val == c.val; }
+    bool operator!=(const RGBA32bit& c) const { return val != c.val; }
 
     void PremulSum(double& sb, double& sg, double& sr, double& sa, double coef) const
     {
@@ -48,7 +52,7 @@ union RGBA32bit
         //  sr += (r * a) * coef;
         //  sa += a * coef;
 
-        // The following code is slightly faster
+        // the code below offers slightly better performance.
         double   ac = a * coef;
         sb += b * ac;
         sg += g * ac;

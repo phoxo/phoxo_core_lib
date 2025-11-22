@@ -10,7 +10,7 @@ inline void Image::ApplyEffectParallel(ImageEffect& effect, IProgressListener* p
 
 inline bool ImageEffect::IsSupported(const Image& img)
 {
-    return (img.ColorBits() == 32);
+    return img.ColorBits() == 32;
 }
 
 _PHOXO_NAMESPACE_END

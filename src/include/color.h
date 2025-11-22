@@ -2,7 +2,7 @@
 
 _PHOXO_BEGIN
 
-/// 32-bit RGBA color, inheriting from RGBQUAD.
+/// 32-bit RGBA color, compatible with RGBQUAD.
 class Color : public RGBQUAD
 {
 public:
@@ -19,9 +19,10 @@ public:
         *(RGBQUAD*)this = c;
     }
 
-    Color(DWORD c = 0)
+    /// Matches GDI+ Color RGB order; can be initialized like: phoxo::Color clr(Gdiplus::Color::Orange)
+    Color(INT32 c = 0)
     {
-        *(DWORD*)this = c;
+        *(INT32*)this = c;
     }
 
     static Color FromCOLORREF(COLORREF c)
@@ -54,8 +55,6 @@ public:
     {
         return (BYTE)((30 * px->r + 59 * px->g + 11 * px->b) / 100);
     }
-
-    static constexpr RGBA32bit   Zero{};
 };
 
 _PHOXO_NAMESPACE_END

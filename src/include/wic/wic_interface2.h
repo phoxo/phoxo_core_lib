@@ -9,7 +9,10 @@ public:
     explicit CComPROPVARIANT(PCWSTR v) { InitPropVariantFromString(v, this); }
     ~CComPROPVARIANT() { PropVariantClear(this); }
 
-    operator LPPROPVARIANT() { return this; }
+    operator LPPROPVARIANT()
+    {
+        return this;
+    }
 
     int ParseInteger() const
     {

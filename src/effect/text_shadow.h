@@ -85,7 +85,7 @@ private:
         if (!s || (percent >= 100))
             return;
 
-        s.ForEachPixel([&](auto& px) { px.a = (px.a * percent + 50) / 100; });
+        s.ForEachPixel([percent](auto& px) { px.a = (BYTE)((px.a * percent + 50) / 100); });
     }
 };
 

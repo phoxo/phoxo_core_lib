@@ -41,12 +41,12 @@ namespace WIC
         return t;
     }
 
-    inline IWICBitmapSourcePtr ConvertFormat(IWICBitmapSource* src, REFWICPixelFormatGUID dest_format)
+    inline IWICBitmapSourcePtr ConvertFormat(IWICBitmapSource* src, REFWICPixelFormatGUID dst_format)
     {
-        if (src && (GetPixelFormat(src) != dest_format))
+        if (src && (GetPixelFormat(src) != dst_format))
         {
             IWICBitmapSourcePtr   t;
-            ::WICConvertBitmapSource(dest_format, src, &t); assert(t);
+            ::WICConvertBitmapSource(dst_format, src, &t); assert(t);
             return t;
         }
         return src;

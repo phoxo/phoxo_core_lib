@@ -2,7 +2,7 @@
 
 _PHOXO_BEGIN
 
-/// Memory DC with auto bitmap select.
+/// Memory DC with auto bitmap selection.
 class BitmapHDC
 {
 private:
@@ -11,7 +11,7 @@ private:
     HGDIOBJ  m_font_bak;
 
 public:
-    /// create memory dc and select bmp in.
+    /// create DC and select bitmap.
     BitmapHDC(HBITMAP bmp)
     {
         m_old = SelectObject(m_dc, bmp);
@@ -20,6 +20,7 @@ public:
         SetStretchBltMode(m_dc, COLORONCOLOR);
     }
 
+    /// restore objects and delete DC.
     ~BitmapHDC()
     {
         SelectObject(m_dc, m_font_bak);
@@ -28,7 +29,10 @@ public:
     }
 
     /// get HDC handle.
-    operator HDC() const { return m_dc; }
+    operator HDC() const
+    {
+        return m_dc;
+    }
 };
 
 _PHOXO_NAMESPACE_END

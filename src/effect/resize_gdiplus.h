@@ -29,22 +29,24 @@ private:
         auto   src = GdiplusUtils::CreateBitmapReference(old);
 
         img.Create(m_new_size, old.ColorBits(), old.Attribute());
-        auto   dest = GdiplusUtils::CreateBitmapReference(img);
-        if (src && dest)
+        auto   dst = GdiplusUtils::CreateBitmapReference(img);
+        if (src && dst)
         {
-            Gdiplus::Graphics   gc(dest.get());
+            Gdiplus::Graphics   gc(dst.get());
             DrawImage(gc, m_new_size, *src);
         }
     }
 
-    void DrawImage(Gdiplus::Graphics& gc, CSize dest_size, Gdiplus::Bitmap& img) const
+    void DrawImage(Gdiplus::Graphics& gc, CSize dst_size, Gdiplus::Bitmap& img) const
     {
-        Gdiplus::ImageAttributes   attri;
-        attri.SetWrapMode(Gdiplus::WrapModeTileFlipXY);
-        Gdiplus::Rect   drc{ 0, 0, dest_size.cx, dest_size.cy };
-        gc.SetPixelOffsetMode(Gdiplus::PixelOffsetModeHalf);
+        using namespace Gdiplus;
+
+        ImageAttributes   attri;
+        attri.SetWrapMode(WrapModeTileFlipXY);
+        Rect   drc{ 0, 0, dst_size.cx, dst_size.cy };
+        gc.SetPixelOffsetMode(PixelOffsetModeHalf);
         gc.SetInterpolationMode(m_resize_mode);
-        gc.DrawImage(&img, drc, 0, 0, img.GetWidth(), img.GetHeight(), Gdiplus::UnitPixel, &attri, NULL, NULL);
+        gc.DrawImage(&img, drc, 0, 0, img.GetWidth(), img.GetHeight(), UnitPixel, &attri, NULL, NULL);
     }
 };
 

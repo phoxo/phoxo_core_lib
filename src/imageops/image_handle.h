@@ -30,9 +30,9 @@ public:
     /// cover image.
     static void Cover(Image& bottom, const Image& top, POINT pt_on_bottom)
     {
-        CRect   rect_top(pt_on_bottom, CSize(top.Width(), top.Height()));
+        CRect   rect_top(pt_on_bottom, top.Size());
         CRect   rc;
-        rc.IntersectRect(CRect(0, 0, bottom.Width(), bottom.Height()), rect_top);
+        rc.IntersectRect(CRect(CPoint(), bottom.Size()), rect_top);
         if (!rc.IsRectEmpty() && (bottom.ColorBits() == top.ColorBits()) && (bottom.Attribute() == top.Attribute()))
         {
             for (int y = rc.top; y < rc.bottom; y++)
@@ -52,23 +52,27 @@ public:
     /// Creates an Image from a gdiplus bitmap.
     static Image Make(Gdiplus::Bitmap& src, Gdiplus::PixelFormat output_format)
     {
+        using namespace Gdiplus;
+
         int   attr = (output_format == PixelFormat32bppPARGB) ? Image::PremultipliedAlpha : 0;
-        int   bpp = Gdiplus::GetPixelFormatSize(output_format);
+        int   bpp = GetPixelFormatSize(output_format);
         UINT   width = src.GetWidth(), height = src.GetHeight();
 
         Image   img;
         if (img.Create(width, height, bpp, attr))
         {
-            Gdiplus::BitmapData   bd{ width, height, img.Stride(), output_format, img.GetMemStart() };
-            Gdiplus::Rect   rgn(0, 0, width, height);
-            auto   b = src.LockBits(&rgn, Gdiplus::ImageLockModeRead | Gdiplus::ImageLockModeUserInputBuf, output_format, &bd); assert(b == Gdiplus::Ok);
-            src.UnlockBits(&bd);
+            BitmapData   bd{ width, height, img.Stride(), output_format, img.GetMemStart() };
+            Rect   rgn(0, 0, width, height);
+            if (src.LockBits(&rgn, ImageLockModeRead | ImageLockModeUserInputBuf, output_format, &bd) == Ok)
+            {
+                src.UnlockBits(&bd);
+            }
         }
         return img;
     }
 
     /// Creates an Image from a WIC bitmap.
-    static Image Make(IWICBitmapSource* src_bmp, WICPixelFormatGUID output_format)
+    static Image Make(IWICBitmapSource* src_bmp, REFWICPixelFormatGUID output_format)
     {
         int   attr = (output_format == WICPremultiplied32bpp) ? Image::PremultipliedAlpha : 0;
         int   bpp = GetBitsPerPixel(output_format);
@@ -89,7 +93,7 @@ public:
     //@}
 
 private:
-    static int GetBitsPerPixel(WICPixelFormatGUID fmt)
+    static int GetBitsPerPixel(REFWICPixelFormatGUID fmt)
     {
         // 目前只用到了 WICNormal32bpp / WICPremultiplied32bpp
         if ((fmt == WICNormal32bpp) ||

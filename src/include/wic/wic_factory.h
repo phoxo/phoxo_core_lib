@@ -30,15 +30,15 @@ namespace WIC
         return nullptr;
     }
 
-    inline IWICBitmapSourcePtr ScaleBitmap(IWICBitmapSource* src, CSize dest_size, WICBitmapInterpolationMode mode = WICBitmapInterpolationModeHighQualityCubic)
+    inline IWICBitmapSourcePtr ScaleBitmap(IWICBitmapSource* src, CSize dst_size, WICBitmapInterpolationMode mode = WICBitmapInterpolationModeHighQualityCubic)
     {
         // sometimes color error when scaling in PBGRA format (?´ý¿¼Ö¤)
-        if (GetBitmapSize(src) == dest_size)
+        if (GetBitmapSize(src) == dst_size)
             return src;
 
         IWICBitmapScalerPtr   cmd;
         g_factory->CreateBitmapScaler(&cmd);
-        if (cmd && src && (cmd->Initialize(src, dest_size.cx, dest_size.cy, mode) == S_OK))
+        if (cmd && src && (cmd->Initialize(src, dst_size.cx, dst_size.cy, mode) == S_OK))
             return cmd;
         assert(false);
         return src;

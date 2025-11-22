@@ -1,10 +1,6 @@
 #pragma once
 #include <numeric>
 
-#if !defined(__AVX__)
-#pragma message("Warning: AVX instructions are not enabled! Please compile with AVX to improve performance")
-#endif
-
 _PHOXO_BEGIN
 _PHOXO_EFFECT_BEGIN
 
@@ -142,13 +138,13 @@ public:
             m_stack -= m_out;
             m_stack += m_in;
 
-            if (*(INT32*)viewer.m_end != *(INT32*)viewer.m_split)
+            if (*viewer.m_end != *viewer.m_split)
             {
                 m_in.Add(viewer.m_end);
                 m_in.Sub(viewer.m_split);
             }
 
-            if (*(INT32*)viewer.m_begin != *(INT32*)viewer.m_split)
+            if (*viewer.m_begin != *viewer.m_split)
             {
                 m_out.Add(viewer.m_split);
                 m_out.Sub(viewer.m_begin);
@@ -159,7 +155,8 @@ public:
 private:
     void SumFirstKernel(const RGBA32bit* px)
     {
-        for (int i = 0; int weight : m_buf.m_kernel)
+        int   i = 0;
+        for (int weight : m_buf.m_kernel)
         {
             if (i <= m_buf.m_kernel.r)
                 m_out.Add(px);

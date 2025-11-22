@@ -24,7 +24,7 @@ private:
         {
             case 8: return PixelFormat8bppIndexed;
             case 24: return PixelFormat24bppRGB;
-            case 32: return (img.IsPremultiplied() ? PixelFormat32bppPARGB : PixelFormat32bppARGB);
+            case 32: return img.IsPremultiplied() ? PixelFormat32bppPARGB : PixelFormat32bppARGB;
         }
         return PixelFormatUndefined;
     }

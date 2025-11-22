@@ -6,7 +6,8 @@
 #include <Wincodecsdk.h>
 #pragma comment (lib, "Windowscodecs.lib")
 
-static_assert(WICBitmapTransformRotate0 == 0); // 很多地方 if 里隐式默认这个
+// MUST be 0: code assumes default rotation is zero in conditional checks.
+static_assert(WICBitmapTransformRotate0 == 0);
 
 #define  WICNormal32bpp  GUID_WICPixelFormat32bppBGRA
 #define  WICPremultiplied32bpp  GUID_WICPixelFormat32bppPBGRA

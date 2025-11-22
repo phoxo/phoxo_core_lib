@@ -29,7 +29,7 @@ namespace WIC
             assert(m_data);
         }
 
-        // 很多开源库输出是 32bppRGBA
+        // Note: Many open-source libraries output 32bpp RGBA, not the Win32-common BGRA channel order.
         bool IsFormat32bpp() const
         {
             return m_data && (m_width * 4 == m_stride);
