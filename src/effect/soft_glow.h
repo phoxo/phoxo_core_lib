@@ -19,7 +19,7 @@ public:
     {
     }
 
-    static void HandlePixel(Image& img, int x, int y, RGBA32bit* px, SoftGlow& effect)
+    static void HandlePixel(Image& img, int x, int y, Color* px, SoftGlow& effect)
     {
         effect.Process(x, y, *px);
     }
@@ -41,9 +41,9 @@ private:
         dst = Math::Clamp0255(255 - (255 - origin) * (255 - dst) / 255);
     }
 
-    void Process(int x, int y, RGBA32bit& px) const
+    void Process(int x, int y, Color& px) const
     {
-        auto   origin = (RGBA32bit*)m_bak.GetPixel(x, y);
+        auto   origin = (Color*)m_bak.GetPixel(x, y);
         ProcessChannel(px.r, origin->r);
         ProcessChannel(px.g, origin->g);
         ProcessChannel(px.b, origin->b);

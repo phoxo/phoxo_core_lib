@@ -8,7 +8,7 @@ class PixelFunc
 public:
     /// Bilinear interpolation at (x, y) using 4 pixels: p00 [0,0], p10 [1,0], p01 [0,1], p11 [1,1]
     /// x, y ¡Ê [0, 1), relative to p00
-    static RGBA32bit CalcBilinear(double x, double y, const RGBA32bit& p00, const RGBA32bit& p10, const RGBA32bit& p01, const RGBA32bit& p11)
+    static Color CalcBilinear(double x, double y, const Color& p00, const Color& p10, const Color& p01, const Color& p11)
     {
         // Calculate bilinear weights and accumulate contributions
         double   sb = 0, sg = 0, sr = 0, sa = 0;
@@ -17,7 +17,7 @@ public:
         p01.PremulSum(sb, sg, sr, sa, (1.0 - x) * y);
         p11.PremulSum(sb, sg, sr, sa, x * y);
 
-        RGBA32bit   ret{ .a = (BYTE)(sa + 0.5) };
+        Color   ret(0, 0, 0, (int)(sa + 0.5));
         if (ret.a)
         {
             ret.b = (BYTE)(sb / sa + 0.5);
@@ -27,17 +27,17 @@ public:
         return ret;
     }
 
-    static void Premultiply(RGBA32bit& px)
+    static void Premultiply(Color& px)
     {
         if (px.a == 255) return;
-        if (px.a == 0) { px = {}; return; }
+        if (px.a == 0) { px.val = 0; return; }
 
         px.r = (BYTE)((px.r * px.a + 127) / 255); // Guaranteed in [0, 255]
         px.g = (BYTE)((px.g * px.a + 127) / 255);
         px.b = (BYTE)((px.b * px.a + 127) / 255);
     }
 
-    static void CompositeStraightAlpha(RGBA32bit& down, const RGBA32bit& up)
+    static void CompositeStraightAlpha(Color& down, const Color& up)
     {
         if (up.a == 0) // upper transparent -> skip
             return;
@@ -62,7 +62,7 @@ public:
         down.a = (BYTE)(outA + 0.5f);
     }
 
-    static void BlendStraightAlpha(RGBA32bit& down, const RGBA32bit& up)
+    static void BlendStraightAlpha(Color& down, const Color& up)
     {
         if (up.a == 0)
             return;
@@ -78,7 +78,7 @@ public:
         down.r = (BYTE)((up.r - down.r) * t + down.r + 0.5f);
     }
 
-    static void CopyRGB(RGBA32bit* dst, const RGBA32bit* src)
+    static void CopyRGB(Color* dst, const Color* src)
     {
         dst->r = src->r;
         dst->g = src->g;

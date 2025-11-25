@@ -7,12 +7,12 @@ _PHOXO_EFFECT_BEGIN
 class Mirror : public PixelIterator<Mirror>
 {
 public:
-    static void HandlePixel(Image& img, int x, int y, RGBA32bit* px, Mirror&)
+    static void HandlePixel(Image& img, int x, int y, Color* px, Mirror&)
     {
         if (x < img.Width() / 2)
         {
             CPoint   pt(img.Width() - 1 - x, y);
-            std::swap(*px, *(RGBA32bit*)img.GetPixel(pt));
+            std::swap(*px, *(Color*)img.GetPixel(pt));
         }
     }
 };
@@ -21,12 +21,12 @@ public:
 class Flip : public PixelIterator<Flip>
 {
 public:
-    static void HandlePixel(Image& img, int x, int y, RGBA32bit* px, Flip&)
+    static void HandlePixel(Image& img, int x, int y, Color* px, Flip&)
     {
         if (y < img.Height() / 2)
         {
             CPoint   pt(x, img.Height() - 1 - y);
-            std::swap(*px, *(RGBA32bit*)img.GetPixel(pt));
+            std::swap(*px, *(Color*)img.GetPixel(pt));
         }
     }
 };
@@ -43,9 +43,9 @@ protected:
         img.Create(m_bak.Height(), m_bak.Width(), m_bak.ColorBits(), m_bak.Attribute());
     }
 
-    RGBA32bit RMap(int x, int y) const
+    Color RMap(int x, int y) const
     {
-        return *(RGBA32bit*)m_bak.GetPixel(x, y);
+        return *(Color*)m_bak.GetPixel(x, y);
     }
 };
 /// @endcond
@@ -60,7 +60,7 @@ private:
         RInit(img);
     }
 public:
-    static void HandlePixel(Image& img, int x, int y, RGBA32bit* px, Rotate90& eff)
+    static void HandlePixel(Image& img, int x, int y, Color* px, Rotate90& eff)
     {
         *px = eff.RMap(y, img.Width() - 1 - x);
     }
@@ -76,7 +76,7 @@ private:
         RInit(img);
     }
 public:
-    static void HandlePixel(Image& img, int x, int y, RGBA32bit* px, Rotate270& eff)
+    static void HandlePixel(Image& img, int x, int y, Color* px, Rotate270& eff)
     {
         *px = eff.RMap(img.Height() - 1 - y, x);
     }

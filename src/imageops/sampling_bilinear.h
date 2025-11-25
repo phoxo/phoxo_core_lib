@@ -12,10 +12,10 @@ public:
      *   -1.0f < pt.X < img.Width()
      *   -1.0f < pt.Y < img.Height()
      */
-    static RGBA32bit Get(const Image& img, const GPointF& pt)
+    static Color Get(const Image& img, GPointF pt)
     {
-        auto pixel = [&img](int ix, int iy) -> RGBA32bit {
-            return img.IsInside(ix, iy) ? *(const RGBA32bit*)img.GetPixel(ix, iy) : RGBA32bit{}; // 以后需要加clamp
+        auto pixel = [&img](int ix, int iy) -> Color {
+            return img.IsInside(ix, iy) ? *(const Color*)img.GetPixel(ix, iy) : Color{}; // 以后需要加clamp
         };
 
         int   x = (int)floor(pt.X);

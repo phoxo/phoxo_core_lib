@@ -4,9 +4,9 @@ class CWICMultiframeLoader
 {
 private:
     IWICBitmapDecoderPtr   m_decoder;
-    GUID   m_format;
-    UINT   m_total;
-    UINT   m_current_frame;
+    GUID   m_format = {};
+    UINT   m_total = 0;
+    UINT   m_current_frame = 0;
     IWICBitmapFrameDecodePtr   m_frame;
     bool   m_use_embedded_icc;
 
@@ -14,17 +14,19 @@ public:
     CWICMultiframeLoader(PCWSTR image_path, bool use_embedded_icc = true)
     {
         m_decoder = WIC::CreateDecoderFromFileNoLock(image_path);
-        m_format = WIC::GetContainerFormat(m_decoder);
-        m_total = WIC::GetFrameCount(m_decoder);
-        m_current_frame = 0;
-        m_frame = WIC::GetFrame(m_decoder, 0);
+        if (m_decoder)
+        {
+            m_decoder->GetContainerFormat(&m_format);
+            m_decoder->GetFrameCount(&m_total);
+            m_decoder->GetFrame(0, &m_frame);
+        }
         m_use_embedded_icc = use_embedded_icc;
     }
 
-    bool IsWebp() const { return (m_format == GUID_ContainerFormatWebp); }
-    bool IsGif() const { return (m_format == GUID_ContainerFormatGif); }
-    bool IsJxl() const { return (m_format == WIC::GUID_ContainerFormat_Jxl); }
-    bool IsCurrentFrameValid() const { return (m_frame != NULL); }
+    bool IsWebp() const { return m_format == GUID_ContainerFormatWebp; }
+    bool IsGif() const { return m_format == GUID_ContainerFormatGif; }
+    bool IsJxl() const { return m_format == WIC::GUID_ContainerFormat_Jxl; }
+    bool IsCurrentFrameValid() const { return m_frame != NULL; }
     UINT GetCurrentFrameIndex() const { return m_current_frame; }
 
     void SelectNextFrame()

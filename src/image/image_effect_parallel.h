@@ -53,8 +53,8 @@ class ParallelTaskExecutor
 {
 private:
     int   m_total = 0, m_finish = 0;
-    std::deque<std::unique_ptr<ParallelTask>>   m_waiting_task;
-    std::vector<std::unique_ptr<ParallelTask>>   m_running_task;
+    std::deque<unique_ptr<ParallelTask>>   m_waiting_task;
+    std::vector<unique_ptr<ParallelTask>>   m_running_task;
     std::vector<HANDLE>   m_running_finish_event;
 
 public:
@@ -104,7 +104,7 @@ private:
         {
             rc.bottom = (std::min)((int)rc.bottom, img.Height());
             rc.right = (std::min)((int)rc.right, img.Width());
-            m_waiting_task.push_back(std::make_unique<ParallelTask>(rc, effect, img));
+            m_waiting_task.push_back(make_unique<ParallelTask>(rc, effect, img));
 
             if ((rc.bottom == img.Height()) && (rc.right == img.Width()))
                 break; // <--- the last task

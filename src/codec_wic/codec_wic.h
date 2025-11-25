@@ -9,7 +9,7 @@ class CodecWIC
 public:
     static Image LoadFile(PCWSTR filepath, REFWICPixelFormatGUID output_format = WICNormal32bpp, WIC::Metadata* meta = NULL, bool use_embedded_icc = false)
     {
-        auto   stm = WIC::CreateStreamFromFileNoLock(filepath);
+        auto   stm = Utils::CreateStreamFromFileNoLock(filepath);
         return LoadStream(stm, output_format, meta, use_embedded_icc);
     }
 
@@ -50,16 +50,18 @@ public:
 
     static IWICBitmapSourcePtr ApplyEmbeddedICC(IWICBitmapSource* src_bmp, IWICColorContextPtr src_icc, bool restore_from_srgb = false)
     {
-        auto   dst_icc = WIC::CreateSystemColorContext_SRGB();
+        auto   dst_icc = CreateSystemColorContext_SRGB();
         if (restore_from_srgb)
         {
             std::swap(src_icc, dst_icc);
         }
 
-        // 不要改变icc像素格式，有一次解码.cr2格式遇到超长时间
-        auto   format = WIC::GetPixelFormat(src_bmp);
-        if (auto trans = CreateColorTransformer())
+        if (auto trans = CreateColorTransformer(); trans && src_bmp)
         {
+            // 不要改变icc像素格式，有一次解码.cr2格式遇到超长时间
+            WICPixelFormatGUID   format{};
+            src_bmp->GetPixelFormat(&format);
+
             if (trans->Initialize(src_bmp, src_icc, dst_icc, format) == S_OK)
                 return trans;
         }
@@ -83,6 +85,14 @@ private:
     {
         IWICColorTransformPtr   t;
         WIC::g_factory->CreateColorTransformer(&t);
+        return t;
+    }
+
+    static IWICColorContextPtr CreateSystemColorContext_SRGB()
+    {
+        IWICColorContextPtr   t;
+        WIC::g_factory->CreateColorContext(&t);
+        if (t) { t->InitializeFromExifColorSpace(1); }
         return t;
     }
 };

@@ -6,7 +6,7 @@ namespace WIC
     struct CodecInfo
     {
         CString   m_exts; // such as : ",.jpeg,.jpe,.jpg,.jfif,.exif,"  a comma-wrapped
-        GUID   m_format; // such as : GUID_ContainerFormatJpeg
+        GUID   m_format{}; // such as : GUID_ContainerFormatJpeg
 
         CodecInfo(IWICBitmapCodecInfo& r)
         {

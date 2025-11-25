@@ -34,11 +34,11 @@ private:
 
         for (int y = rc.top; y < rc.bottom; y++)
         {
-            auto   dst = (RGBA32bit*)img.GetPixel(rc.left, y);
-            auto   src = (RGBA32bit*)m_top.GetPixel(rc.left - m_top_pos.x, y - m_top_pos.y);
+            auto   dst = (Color*)img.GetPixel(rc.left, y);
+            auto   src = (Color*)m_top.GetPixel(rc.left - m_top_pos.x, y - m_top_pos.y);
             for (int x = rc.left; x < rc.right; x++, dst++, src++)
             {
-                RGBA32bit   cr = *src;
+                Color   cr = *src;
                 if (m_percent != 100)
                 {
                     cr.a = (BYTE)((cr.a * m_percent + 50) / 100);

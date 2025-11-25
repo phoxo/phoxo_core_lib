@@ -13,9 +13,20 @@ private:
 public:
     virtual ~IProgressListener() = default;
 
-    bool IsUserCanceled() const { return m_canceled; }
-    void BeginFixProgress(int fix_progress) { m_fix_progress = fix_progress; }
-    void EndFixProgress() { m_fix_progress = -1; }
+    bool IsUserCanceled() const
+    {
+        return m_canceled;
+    }
+
+    void BeginFixProgress(int fix_progress)
+    {
+        m_fix_progress = fix_progress;
+    }
+
+    void EndFixProgress()
+    {
+        m_fix_progress = -1;
+    }
 
     bool UpdateProgress(int finish_percent)
     {

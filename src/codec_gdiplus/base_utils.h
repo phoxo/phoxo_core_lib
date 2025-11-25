@@ -7,14 +7,14 @@ _PHOXO_BEGIN
 class GdiplusUtils
 {
 public:
-    static std::unique_ptr<Gdiplus::Bitmap> CreateBitmapReference(const Image& img)
+    static unique_ptr<Gdiplus::Bitmap> CreateBitmapReference(const Image& img)
     {
         if (!img)
         {
             assert(false); return nullptr;
         }
 
-        return std::make_unique<Gdiplus::Bitmap>(img.Width(), img.Height(), img.Stride(), GetPixelFormat(img), img.GetMemStart());
+        return make_unique<Gdiplus::Bitmap>(img.Width(), img.Height(), img.Stride(), GetPixelFormat(img), img.GetMemStart());
     }
 
 private:

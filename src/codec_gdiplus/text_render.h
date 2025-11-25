@@ -45,7 +45,7 @@ public:
         Image   img;
         img.Create(sz);
         img.ZeroPixels();
-        if (auto refbmp = phoxo::GdiplusUtils::CreateBitmapReference(img))
+        if (auto refbmp = GdiplusUtils::CreateBitmapReference(img))
         {
             auto   g = CreateGraphics(*refbmp);
             g->DrawString(m_text, -1, &m_font, LayoutRect(margin), &m_format, &brush);
@@ -53,12 +53,12 @@ public:
         return img;
     }
 
-    std::unique_ptr<GdiplusPathRender> CreateStrokeRender(int margin = 0) const
+    unique_ptr<GdiplusPathRender> CreateStrokeRender(int margin = 0) const
     {
         Gdiplus::FontFamily   family;
         m_font.GetFamily(&family);
 
-        auto   obj = std::make_unique<GdiplusPathRender>();
+        auto   obj = make_unique<GdiplusPathRender>();
         obj->m_path.AddString(m_text, -1, &family, m_params.style, m_params.PixelSize(), LayoutRect(margin), &m_format);
         return obj;
     }
@@ -74,11 +74,11 @@ public:
         return { (int)ceil(result.Width), (int)ceil(result.Height) };
     }
 
-    std::unique_ptr<Gdiplus::Graphics> CreateGraphics(Gdiplus::Bitmap& bmp) const
+    unique_ptr<Gdiplus::Graphics> CreateGraphics(Gdiplus::Bitmap& bmp) const
     {
         using namespace Gdiplus;
 
-        auto   g = std::make_unique<Graphics>(&bmp);
+        auto   g = make_unique<Graphics>(&bmp);
         g->SetPageUnit(UnitPixel);
         g->SetTextRenderingHint(m_params.GetTextHint());
         g->SetPixelOffsetMode(PixelOffsetModeHalf);

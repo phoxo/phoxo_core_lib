@@ -1,5 +1,4 @@
 #pragma once
-#include "define.h"
 #include "image_effect.h"
 
 _PHOXO_BEGIN
@@ -158,7 +157,7 @@ public:
     BYTE* GetMemStart() const { return m_pixel; } ///< pointer to pixel buffer
     int Attribute() const { return m_attribute; }
     operator HBITMAP() const { return m_DIB_Handle; }
-    operator bool() const { return m_pixel != 0; }
+    explicit operator bool() const { return m_pixel != 0; }
     bool IsPremultiplied() const { return (m_attribute & PremultipliedAlpha); }
     void SetPremultiplied(bool v) { v ? ModifyAttribute(0, PremultipliedAlpha) : ModifyAttribute(PremultipliedAlpha, 0); }
     void ModifyAttribute(int remove, int add)
@@ -229,7 +228,7 @@ public:
             BYTE *   cur = GetPixel(rc.left, y);
             for (int x = rc.left; x < rc.right; x++, cur += bpp)
             {
-                T::HandlePixel(*this, x, y, (RGBA32bit*)cur, effect);
+                T::HandlePixel(*this, x, y, (Color*)cur, effect);
             }
         }
     }
@@ -244,7 +243,7 @@ private:
 
     void AllocPixelBuffer()
     {
-        size_t   info_byte = sizeof(BITMAPINFOHEADER) + 16;
+        size_t   info_byte = sizeof(BITMAPINFOHEADER) + 16; // +16 bytes for optional bit masks (used by some 16/32-bpp formats)
         if (ColorBits() <= 8)
         {
             info_byte += (sizeof(RGBQUAD) * 256);

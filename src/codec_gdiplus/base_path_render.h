@@ -23,7 +23,7 @@ public:
         if (!steps)
             return;
 
-        clr.rgbReserved = (BYTE)(256 / steps); // alpha
+        clr.a = (BYTE)(256 / steps);
         for (int i = 1; i < steps; i++)
         {
             Draw(g, { clr, (float)i });
@@ -40,7 +40,7 @@ private:
     {
         if (!m_pen)
         {
-            m_pen = std::make_unique<Gdiplus::Pen>(style.color, style.width);
+            m_pen = make_unique<Gdiplus::Pen>(style.color, style.width);
             m_pen->SetLineJoin(Gdiplus::LineJoinRound);
         }
         else
@@ -54,7 +54,7 @@ private:
 public:
     Gdiplus::GraphicsPath   m_path;
 private:
-    std::unique_ptr<Gdiplus::Pen>   m_pen; // for draw outline path
+    unique_ptr<Gdiplus::Pen>   m_pen; // for draw outline path
 };
 
 _PHOXO_NAMESPACE_END

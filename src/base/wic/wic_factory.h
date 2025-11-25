@@ -3,27 +3,20 @@
 // 这里的函数都依赖 g_factory
 namespace WIC
 {
+    using namespace phoxo;
+
     inline IWICImagingFactoryPtr   g_factory;
-
-    inline IWICColorContextPtr CreateColorContext()
-    {
-        IWICColorContextPtr   t;
-        g_factory->CreateColorContext(&t);
-        return t;
-    }
-
-    inline IWICColorContextPtr CreateSystemColorContext_SRGB()
-    {
-        auto   t = CreateColorContext();
-        if (t) { t->InitializeFromExifColorSpace(1); }
-        return t;
-    }
 
     inline IWICColorContextPtr GetFirstColorContext(IWICBitmapFrameDecode* frame)
     {
-        if (UINT count = GetColorContextsCount(frame))
+        UINT   count = 0;
+        if (frame)
+            frame->GetColorContexts(0, NULL, &count);
+
+        if (count)
         {
-            IWICColorContextPtr   icc = CreateColorContext();
+            IWICColorContextPtr   icc;
+            g_factory->CreateColorContext(&icc);
             if (frame->GetColorContexts(1, &icc.GetInterfacePtr(), &count) == S_OK)
                 return icc;
         }
@@ -101,7 +94,7 @@ namespace WIC
 
     inline IWICBitmapDecoderPtr CreateDecoderFromFileNoLock(PCWSTR filepath)
     {
-        auto   t = CreateStreamFromFileNoLock(filepath);
+        auto   t = Utils::CreateStreamFromFileNoLock(filepath);
         return CreateDecoderFromStream(t);
     }
 

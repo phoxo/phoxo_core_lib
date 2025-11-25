@@ -22,7 +22,7 @@ private:
         }
     }
 
-    void Process(RGBA32bit& x) const
+    void Process(Color& x) const
     {
         x.b = m_LUT[x.b];
         x.g = m_LUT[x.g];
@@ -30,7 +30,7 @@ private:
     }
 
 public:
-    static void HandlePixel(Image&, int, int, RGBA32bit* px, ColorLUT& eff)
+    static void HandlePixel(Image&, int, int, Color* px, ColorLUT& eff)
     {
         eff.Process(*px);
     }

@@ -53,13 +53,13 @@ namespace D2D
         return ret;
     }
 
-    inline ID2D1RenderTargetPtr CreateWicBitmapRenderTarget(IWICBitmap* bmp)
+    inline ID2D1RenderTargetPtr CreateWicBitmapRenderTarget(ID2D1Factory* factory, IWICBitmap* bmp)
     {
         auto   prop = internal::BuildProperties(D2D1_RENDER_TARGET_TYPE_SOFTWARE);
         ID2D1RenderTargetPtr   ret;
         if (bmp) // 传给D2D NULL竟然会crash...
         {
-            g_factory->CreateWicBitmapRenderTarget(bmp, &prop, &ret); assert(ret);
+            factory->CreateWicBitmapRenderTarget(bmp, &prop, &ret); assert(ret);
         }
         return ret;
     }
@@ -102,7 +102,7 @@ namespace D2D
 
     inline void DrawTextLayout(
         ID2D1RenderTarget* target,
-        const POINT& pt,
+        POINT pt,
         IDWriteTextLayout* layout,
         const D2D1::ColorF& text_color)
     {

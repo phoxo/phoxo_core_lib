@@ -1,21 +1,20 @@
 /*
-    Copyright (C) =PhoXo= Fu Li
+    PhoXo Core Lib - Header-only C++20 image library (Windows)
 
-    Author   :  Fu Li
-    Create   :
-    Home     :  http://www.phoxo.com
-    Mail     :  atphoxo@gmail.com
-
-    This file is part of PhoXo
-
-    This code is licensed under the terms of the MIT license.
+    Copyright (C) 2025  Fu Li
+    Author  : Fu Li
+    Website : https://www.phoxo.com
+    Email   : atphoxo@gmail.com
+    License : MIT
 */
 #pragma once
 
+#include "base/define.h"
+
 // core
-#include "include/image.h"
-#include "include/image_effect_parallel.h"
-#include "include/post_implement.h"
+#include "image/image.h"
+#include "image/image_effect_parallel.h"
+#include "image/post_implement.h"
 
 // image operation helpers
 #include "imageops/image_handle.h"

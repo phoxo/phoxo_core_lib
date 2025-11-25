@@ -16,8 +16,6 @@ namespace D2D
         // ×¢Òâ£ºÖ»ÄÜäÖÈ¾ premultiplied alpha
         bool DrawSvg(IWICBitmap* target, float scale, ID2D1Factory* factory) const
         {
-            assert(WIC::GetPixelFormat(target) == WICPremultiplied32bpp);
-
             D2D1_SIZE_F   viewport = GetViewportSize(target);
             if (m_stream && (viewport.width > 0))
             {

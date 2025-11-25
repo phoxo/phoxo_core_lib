@@ -29,7 +29,7 @@ struct KernelInfo : public std::vector<int>,
 
 using KernelCRef = const KernelInfo&;
 
-struct LineBuffer : public std::vector<RGBA32bit>
+struct LineBuffer : public std::vector<Color>
 {
     KernelCRef   m_kernel;
     const int   m_width_or_height;
@@ -45,7 +45,7 @@ struct LineBuffer : public std::vector<RGBA32bit>
         FillPadding(curr, img.GetPixel(0, y));
         for (int x = 0; x < img.Width(); x++)
         {
-            *curr++ = *(RGBA32bit*)img.GetPixel(x, y);
+            *curr++ = *(Color*)img.GetPixel(x, y);
         }
         FillPadding(curr, img.GetPixel(img.Width() - 1, y));
     }
@@ -56,15 +56,15 @@ struct LineBuffer : public std::vector<RGBA32bit>
         FillPadding(curr, img.GetPixel(x, 0));
         for (int y = 0; y < img.Height(); y++)
         {
-            *curr++ = *(RGBA32bit*)img.GetPixel(x, y);
+            *curr++ = *(Color*)img.GetPixel(x, y);
         }
         FillPadding(curr, img.GetPixel(x, img.Height() - 1));
     }
 
 private:
-    void FillPadding(RGBA32bit*& curr, const void* edge_pixel) const
+    void FillPadding(Color*& curr, const void* edge_pixel) const
     {
-        auto   t = (m_kernel.m_copy_edge ? *(RGBA32bit*)edge_pixel : RGBA32bit{});
+        auto   t = (m_kernel.m_copy_edge ? *(Color*)edge_pixel : Color{});
         curr = std::fill_n(curr, m_kernel.r, t);
     }
 };
@@ -81,7 +81,7 @@ public:
     void Add(auto* px) { AddWeight(px, 1); }
     void Sub(auto* px) { AddWeight(px, -1); }
 
-    void AddWeight(const RGBA32bit* px, int weight)
+    void AddWeight(const Color* px, int weight)
     {
         px->PremulSum(sb, sg, sr, sa, weight);
     }
@@ -89,7 +89,7 @@ public:
     void operator-=(const StackSum& s) { sb -= s.sb; sg -= s.sg; sr -= s.sr; sa -= s.sa; }
     void operator+=(const StackSum& s) { sb += s.sb; sg += s.sg; sr += s.sr; sa += s.sa; }
 
-    void Output(RGBA32bit* p) const
+    void Output(Color* p) const
     {
         if (sa > 0.4)
         {
@@ -100,14 +100,14 @@ public:
         }
         else
         {
-            *p = {};
+            p->val = 0;
         }
     }
 };
 
 struct InputPixelView
 {
-    const RGBA32bit   * m_begin, * m_split, * m_end; // ->1 2 3 4 ->5 6 7 ->X
+    const Color   * m_begin, * m_split, * m_end; // ->1 2 3 4 ->5 6 7 ->X
 
     InputPixelView(auto& buf) : m_begin(buf.data())
     {
@@ -127,7 +127,7 @@ private:
 public:
     LineCalculator(auto& buf) : m_buf(buf), m_out(buf.m_kernel), m_in(buf.m_kernel), m_stack(buf.m_kernel) {}
 
-    void OutputLine(RGBA32bit* dest, int pixel_span)
+    void OutputLine(Color* dest, int pixel_span)
     {
         SumFirstKernel(m_buf.data());
 
@@ -153,7 +153,7 @@ public:
     }
 
 private:
-    void SumFirstKernel(const RGBA32bit* px)
+    void SumFirstKernel(const Color* px)
     {
         int   i = 0;
         for (int weight : m_buf.m_kernel)
@@ -192,7 +192,7 @@ class StackBlurHoriz : public StackBlurAxisBase
             lnbuf.GetHorizontalLine(img, y);
 
             LineCalculator   calc(lnbuf);
-            calc.OutputLine((RGBA32bit*)img.GetLinePtr(y), 1);
+            calc.OutputLine((Color*)img.GetLinePtr(y), 1);
         }
     }
 };
@@ -210,7 +210,7 @@ class StackBlurVert : public StackBlurAxisBase
             lnbuf.GetVertLine(img, x);
 
             LineCalculator   calc(lnbuf);
-            calc.OutputLine((RGBA32bit*)img.GetPixel(x, 0), img.Width());
+            calc.OutputLine((Color*)img.GetPixel(x, 0), img.Width());
         }
     }
 };
@@ -237,9 +237,9 @@ private:
     {
         if (progress) { progress->BeginFixProgress(0); }
 
-        std::vector<std::unique_ptr<ImageEffect>>   effects;
-        effects.push_back(std::make_unique<internal::StackBlurVert>(m_kernel)); // 8bit改造这两个effect可以替换成模板
-        effects.push_back(std::make_unique<internal::StackBlurHoriz>(m_kernel));
+        std::vector<unique_ptr<ImageEffect>>   effects;
+        effects.push_back(make_unique<internal::StackBlurVert>(m_kernel)); // 8bit改造这两个effect可以替换成模板
+        effects.push_back(make_unique<internal::StackBlurHoriz>(m_kernel));
 
         for (auto& eff : effects)
         {

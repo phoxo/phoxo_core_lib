@@ -7,7 +7,7 @@ _PHOXO_EFFECT_BEGIN
 class CheckerFill : public PixelIterator<CheckerFill>
 {
 private:
-    RGBA32bit   m_cr1, m_cr2;
+    Color   m_cr1, m_cr2;
     int   m_size;
 
 public:
@@ -20,15 +20,15 @@ public:
     }
 
 private:
-    void Process(int x, int y, RGBA32bit& px) const
+    void Process(int x, int y, Color& px) const
     {
         int   nX = x / m_size, nY = y / m_size;
-        RGBA32bit   c = ((nX + nY) % 2 == 0) ? m_cr1 : m_cr2;
+        Color   c = ((nX + nY) % 2 == 0) ? m_cr1 : m_cr2;
         PixelFunc::CompositeStraightAlpha(px, c);
     }
 
 public:
-    static void HandlePixel(Image&, int x, int y, RGBA32bit* px, CheckerFill& eff)
+    static void HandlePixel(Image&, int x, int y, Color* px, CheckerFill& eff)
     {
         eff.Process(x, y, *px);
     }

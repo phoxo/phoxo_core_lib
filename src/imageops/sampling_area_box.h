@@ -6,7 +6,7 @@ _PHOXO_BEGIN
 class SamplingAreaBox
 {
 public:
-    static RGBA32bit Get(const Image& img, const GPointF& pt, double ratio)
+    static Color Get(const Image& img, GPointF pt, double ratio)
     {
         PixelAreaBox   box(pt, ratio);
 
@@ -27,7 +27,7 @@ public:
 
                 if (img.IsInside(x, y))
                 {
-                    box.Accumulate(*(const RGBA32bit*)img.GetPixel(x, y), w * h);
+                    box.Accumulate(*(const Color*)img.GetPixel(x, y), w * h);
                 }
             }
         }
@@ -46,7 +46,7 @@ private:
         double   left, top, right, bottom;
         double   sb = 0, sg = 0, sr = 0, sa = 0, total_weight = 0;
 
-        PixelAreaBox(const GPointF& pt, double ratio)
+        PixelAreaBox(GPointF pt, double ratio)
         {
             double   radius = 0.5 / ratio;
             left = pt.X - radius; top = pt.Y - radius;
@@ -62,15 +62,15 @@ private:
         double OverlapX(int x) const { return OverlapLength(x, left, right); }
         double OverlapY(int y) const { return OverlapLength(y, top, bottom); }
 
-        void Accumulate(const RGBA32bit& px, double weight)
+        void Accumulate(const Color& px, double weight)
         {
             px.PremulSum(sb, sg, sr, sa, weight);
             total_weight += weight;
         }
 
-        RGBA32bit ResultColor() const
+        Color ResultColor() const
         {
-            RGBA32bit   ret{};
+            Color   ret{};
             if (total_weight > 0) // total_weight > 0 if accumulated, 0 if outside the layer
             {
                 ret.a = (BYTE)(sa / total_weight + 0.5);

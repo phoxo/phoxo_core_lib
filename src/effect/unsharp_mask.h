@@ -20,7 +20,7 @@ public:
         m_threshold = std::clamp(threshold, 0, 255);
     }
 
-    static void HandlePixel(Image& img, int x, int y, RGBA32bit* px, UnsharpMask& eff)
+    static void HandlePixel(Image& img, int x, int y, Color* px, UnsharpMask& eff)
     {
         eff.Process(x, y, *px);
     }
@@ -43,9 +43,9 @@ private:
             dst = Math::Clamp0255(origin + m_amount * diff / 100);
     }
 
-    void Process(int x, int y, RGBA32bit& px) const
+    void Process(int x, int y, Color& px) const
     {
-        auto   origin = (RGBA32bit*)m_bak.GetPixel(x, y);
+        auto   origin = (Color*)m_bak.GetPixel(x, y);
         ProcessChannel(px.r, origin->r);
         ProcessChannel(px.g, origin->g);
         ProcessChannel(px.b, origin->b);

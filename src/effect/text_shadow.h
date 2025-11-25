@@ -11,8 +11,8 @@ public:
     {
         int   blur_radius = 5;
         SIZE   shadow_offset = { 3,3 };
-        Color   shadow_color = Gdiplus::Color::Black;
-        Color   text_color = Gdiplus::Color::White;
+        Color   shadow_color{ Gdiplus::Color::Black };
+        Color   text_color{ Gdiplus::Color::White };
         int   shadow_opacity = 100; // 0 ~ 100, where 100 = fully opaque
     };
 

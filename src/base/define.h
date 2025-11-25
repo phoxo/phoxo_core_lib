@@ -30,53 +30,26 @@
 #define _PHOXO_NAMESPACE_END   }
 
 _PHOXO_BEGIN
+
 using GPointF = Gdiplus::PointF;
+using std::unique_ptr, std::make_unique;
 
-/// The alias for RGBQUAD, rgbReserved is too ugly.
-union RGBA32bit
-{
-    RGBQUAD   quad;
-    struct { BYTE b, g, r, a; };
-    int32_t   val;
-
-    operator RGBQUAD() const { return quad; }
-    void operator=(const RGBQUAD& c) { quad = c; }
-
-    bool operator==(const RGBA32bit& c) const { return val == c.val; }
-    bool operator!=(const RGBA32bit& c) const { return val != c.val; }
-
-    void PremulSum(double& sb, double& sg, double& sr, double& sa, double coef) const
-    {
-        //  sb += (b * a) * coef;
-        //  sg += (g * a) * coef;
-        //  sr += (r * a) * coef;
-        //  sa += a * coef;
-
-        // the code below offers slightly better performance.
-        double   ac = a * coef;
-        sb += b * ac;
-        sg += g * ac;
-        sr += r * ac;
-        sa += ac;
-    }
-};
 _PHOXO_NAMESPACE_END
 
 //-------------------------------------------------------------------------------------
+#include "color.h"
+#include "utils.h"
+#include "math.h"
+#include "bitmap_hdc.h"
+#include "file_ext.h"
+#include "pixel_func.h"
+#include "progress_listener.h"
+
 #include "wic/wic_interface.h"
 #include "wic/wic_interface2.h"
-#include "wic/wic_interface3.h"
 #include "wic/wic_bitmap_lock.h"
 #include "wic/wic_orientation_tag.h"
 #include "wic/wic_metadata_iterator.h"
 #include "wic/wic_metadata.h"
 #include "wic/wic_factory.h" // 此文件依赖全局 g_factory
 #include "wic/wic_system_codec.h" // 此文件依赖全局 g_factory
-
-#include "base_utils.h"
-#include "base_bitmap_hdc.h"
-#include "base_math.h"
-#include "base_file_ext.h"
-#include "progress_listener.h"
-#include "color.h"
-#include "pixel_func.h"

@@ -16,7 +16,7 @@ public:
     {
     }
 
-    void Process(RGBA32bit* px) const
+    void Process(Color* px) const
     {
         double   h, s, l;
         RGBtoHSL(px, h, s, l);
@@ -24,12 +24,12 @@ public:
         HSLtoRGB(h, s, l, px);
     }
 
-    static void HandlePixel(Image&, int, int, RGBA32bit* px, HueSaturation& eff)
+    static void HandlePixel(Image&, int, int, Color* px, HueSaturation& eff)
     {
         eff.Process(px);
     }
 
-    static void HSLtoRGB(double h, double s, double l, RGBA32bit* out)
+    static void HSLtoRGB(double h, double s, double l, Color* out)
     {
         if (s == 0)
         {
@@ -45,7 +45,7 @@ public:
         }
     }
 
-    static void RGBtoHSL(const RGBA32bit* px, double& H, double& S, double& L)
+    static void RGBtoHSL(const Color* px, double& H, double& S, double& L)
     {
         double   r = px->r / 255.0;
         double   g = px->g / 255.0;
